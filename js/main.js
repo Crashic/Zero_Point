@@ -16,6 +16,7 @@
     ZP.pwa.init();
     ZP.render.layout();
     ZP.render.snapCamera();
+    ZP.potions.autoBuy(true);
     ZP.ui.render();
     const s = ZP.save.data;
     ZP.ui.log(s.kills || s.deaths ? `С возвращением! ${ZP.HERO_NAME} снова в деревне. Побед: ${s.kills}.` : `${ZP.HERO_NAME} выходит из деревни на охоту в Звериные луга.`, 'sys');
@@ -59,6 +60,7 @@
     ZP.enemies.update(dt);
     ZP.combat.update(dt);
     ZP.inventory.update(dt);
+    ZP.potions.update(dt);
     ZP.fx.update(dt);
     const d = ZP.world.dummy(); if (d && d.shake > 0) d.shake = Math.max(0, d.shake - dt);
   }

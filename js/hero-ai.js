@@ -215,6 +215,7 @@
     H.cd = 0.5; H.state = 'go';
     ZP.fx.ring(H.x, H.y);
     ZP.ui.log(`${ZP.HERO_NAME} воскресает у камня в деревне и снова идёт на охоту.`, 'sys');
+    ZP.potions.autoBuy();
   };
 
   AI.selectWeapon = (k) => {

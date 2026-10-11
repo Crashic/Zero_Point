@@ -18,11 +18,20 @@
     for (const id of pool) { x -= ZP.RARITY[ZP.ITEMS[id].rar].weight; if (x <= 0) return id; }
     return pool[0];
   };
+  // автопродажа: включена и редкость отмечена — предмет сразу превращается в коины
+  I.autoSells = (id) => { const st = ZP.save.data.settings; return st.autosellOn && st.autosellRar[ZP.ITEMS[id].rar]; };
   I.onKill = (e) => {
     const id = I.rollDrop(e);
     if (!id) return;
-    I.add(id, 1);
     const it = ZP.ITEMS[id];
+    if (I.autoSells(id)) {
+      ZP.save.data.coins += it.price; ZP.save.data.coinsEarned = (ZP.save.data.coinsEarned || 0) + it.price;
+      ZP.fx.float(e.x, e.y - e.h - 44, '+' + it.price + ' коин. (' + it.name + ')', '#ffe08a', true);
+      ZP.ui.log(`Добыча продана автоматически: ${it.name} за ${it.price} коин.`, 'gold');
+      ZP.ui.dirty();
+      return;
+    }
+    I.add(id, 1);
     // предмет подпрыгивает на земле и летит к героине
     I.loot.push({ id, map: ZP.world.cur.id, x: e.x, y: e.y, z: 0, vz: 90, t: 0 });
     ZP.fx.float(e.x, e.y - e.h - 44, '+ ' + it.name, ZP.RARITY[it.rar].color, true);
@@ -57,6 +66,14 @@
     ZP.save.data.coins += gain; ZP.save.data.coinsEarned = (ZP.save.data.coinsEarned || 0) + gain;
     ZP.ui.log(`Продано: ${it.name} ×${n} за ${gain} коин.`, 'gold');
     ZP.save.write(); ZP.ui.dirty();
+    return gain;
+  };
+  // продать всё, что подходит под автопродажу (при её включении или смене редкостей)
+  I.applyAutosell = () => {
+    if (!ZP.save.data.settings.autosellOn) return 0;
+    let gain = 0, n = 0;
+    for (const [id, cnt] of Object.entries(inv())) if (ZP.ITEMS[id] && I.autoSells(id)) { gain += ZP.ITEMS[id].price * cnt; n += cnt; delete inv()[id]; }
+    if (n) { ZP.save.data.coins += gain; ZP.save.data.coinsEarned = (ZP.save.data.coinsEarned || 0) + gain; ZP.ui.log(`Автопродажа: ${n} предм. за ${gain} коин.`, 'gold'); ZP.save.write(); ZP.ui.dirty(); }
     return gain;
   };
   I.sellAll = () => {

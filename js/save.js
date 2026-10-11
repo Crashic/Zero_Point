@@ -17,6 +17,8 @@
     inventory: {},
     coins: 0,
     coinsEarned: 0,
+    potions: {},
+    settings: { drinkAt: 30, autobuy: {}, autosellOn: false, autosellRar: [true, false, false, false] },
     savedAt: 0,
   });
 
@@ -57,6 +59,12 @@
         if (raw.inventory && typeof raw.inventory === 'object') for (const [id, n] of Object.entries(raw.inventory)) if (ZP.ITEMS[id] && n > 0) d.inventory[id] = n | 0;
         d.coins = Math.max(0, raw.coins | 0);
         d.coinsEarned = Math.max(0, raw.coinsEarned | 0);
+        if (raw.potions && typeof raw.potions === 'object') for (const [id, n] of Object.entries(raw.potions)) if (ZP.POTIONS[id] && n > 0) d.potions[id] = n | 0;
+        const rs = raw.settings || {};
+        if (typeof rs.drinkAt === 'number') d.settings.drinkAt = Math.max(0, Math.min(100, Math.round(rs.drinkAt)));
+        if (rs.autobuy && typeof rs.autobuy === 'object') for (const [id, n] of Object.entries(rs.autobuy)) if (ZP.POTIONS[id]) d.settings.autobuy[id] = Math.max(0, Math.min(ZP.POTION_MAX_AUTOBUY, n | 0));
+        d.settings.autosellOn = !!rs.autosellOn;
+        if (Array.isArray(rs.autosellRar) && rs.autosellRar.length === 4) d.settings.autosellRar = rs.autosellRar.map(Boolean);
       }
       this.data = d;
       return d;

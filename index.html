@@ -104,8 +104,23 @@
           <span class="hint" id="bag-summary"></span>
           <button class="gbtn" type="button" id="sell-all" data-armed="false">Продать всё</button>
         </div>
+        <h4 class="sec-h ol">Зелья</h4>
+        <div class="bag-grid potions" id="potion-grid"></div>
+        <h4 class="sec-h ol">Добыча</h4>
         <div class="bag-grid" id="bag-grid"></div>
         <div class="inset item-card" id="item-card"></div>
+        <div class="inset" style="display:grid;gap:8px">
+          <h4>Автозакупка при воскрешении</h4>
+          <p class="hint">После воскрешения у камня героиня докупает зелья до выбранного количества. Если коинов не хватает — покупает по одному каждого вида по кругу, на сколько хватит.</p>
+          <div class="abuy" id="autobuy"></div>
+          <div class="abuy-foot"><span class="hint" id="autobuy-cost"></span><button class="tbtn" type="button" id="buy-now">Докупить сейчас</button></div>
+        </div>
+        <div class="inset" style="display:grid;gap:8px">
+          <h4>Автопродажа добычи</h4>
+          <p class="hint">Предметы выбранной редкости продаются сразу, как только выпадают. Зелья не продаются.</p>
+          <button class="toggle" type="button" id="autosell-on" aria-pressed="false"></button>
+          <div class="rar-row" id="autosell-rar"></div>
+        </div>
       </div>
     </div>
   </div>
@@ -132,6 +147,12 @@
           <p class="hint" id="install-hint"></p>
         </div>
         <div class="inset" style="display:grid;gap:8px">
+          <h4>Пить зелья</h4>
+          <label class="range-row" for="drink-at"><span id="drink-label"></span></label>
+          <input type="range" id="drink-at" min="0" max="100" step="5" value="30">
+          <p class="hint" id="drink-hint"></p>
+        </div>
+        <div class="inset" style="display:grid;gap:8px">
           <h4>Скорость игры</h4>
           <div class="menu-row" id="speed-row"></div>
         </div>
@@ -153,6 +174,7 @@
 <script src="js/changelog.js"></script>
 <script src="js/skills-data.js"></script>
 <script src="js/items-data.js"></script>
+<script src="js/potions-data.js"></script>
 <script src="js/save.js"></script>
 <script src="js/stats.js"></script>
 <script src="js/mastery.js"></script>
@@ -169,6 +191,7 @@
 <script src="js/enemies.js"></script>
 <script src="js/combat.js"></script>
 <script src="js/inventory.js"></script>
+<script src="js/potions.js"></script>
 <script src="js/hero-ai.js"></script>
 <script src="js/render.js"></script>
 <!-- Интерфейс -->

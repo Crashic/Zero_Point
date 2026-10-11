@@ -45,6 +45,18 @@
   };
   const COIN = { rows: ['..oooo..', '.oyyyyo.', 'oyywwyko', 'oywyyyko', 'oyyyyyko', 'oyyyykko', '.okkkko.', '..oooo..'], pal: { o: O, y: '#ffd84a', w: '#fff4b0', k: '#d89a2a' } };
 
+
+  // эликсиры
+  const CORK = '#a8763d';
+  const POT = {
+    dew: { rows: ['..........', '....oo....', '...okko...', '....oo....', '...owro...', '...orro...', '...orro...', '...oddo...', '....oo....', '..........'], pal: { o: O, k: CORK, w: '#ffd8d8', r: '#e8463a', d: '#a82a2a' } },
+    herbal: { rows: ['....oo....', '...okko...', '....oo....', '...owro...', '..owrrro..', '..orrrro..', '..orrrro..', '..odddro..', '...oddo...', '....oo....'], pal: { o: O, k: CORK, w: '#e0f8d0', r: '#5cc24e', d: '#3a8a34' } },
+    scarlet: { rows: ['...oooo...', '...okko...', '....oo....', '..owrrro..', '.owrrrrro.', '.orrrrrro.', '.orrrrrro.', '.odrrrrdo.', '..oddddo..', '...oooo...'], pal: { o: O, k: CORK, w: '#ffd0d0', r: '#e0303a', d: '#9a1a24' } },
+    heart: { rows: ['..oooooo..', '..okkkko..', '...oooo...', '.owrrrrro.', 'owrrhrhrro', 'orrrhhhrro', 'orrrrhrrro', 'orrrrrrrro', 'oddrrrrddo', '.oooooooo.'], pal: { o: O, k: CORK, w: '#ffe0e8', r: '#d83a6a', h: '#ff9ab0', d: '#8a1a3a' } },
+    phoenix: { rows: ['....x.....', '....oo....', '...okko...', '..oooooo..', '.owyyyyyo.', 'owyyfyyyyo', 'oyyfffyyyo', 'oyyyfyyyyo', 'oddyyyyddo', '.oooooooo.'], pal: { o: O, k: CORK, w: '#fff4b0', y: '#ffd84a', f: '#ff7a2a', d: '#d89a2a', x: '#ffffff' } },
+  };
+  PIX.potionUrl = (id) => PIX.url('pot:' + id, POT[id].rows, POT[id].pal, 4);
+
   PIX.itemUrl = (id) => PIX.url('item:' + id, ICON[id].rows, ICON[id].pal, 4);
   PIX.itemCanvas = (id) => PIX.cache['cv:' + id] || (PIX.cache['cv:' + id] = PIX.canvas(ICON[id].rows, ICON[id].pal));
   PIX.coinUrl = () => PIX.url('coin', COIN.rows, COIN.pal, 3);

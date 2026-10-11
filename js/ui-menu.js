@@ -7,7 +7,13 @@
   Mn.setPause = (v) => { ZP.paused = v; $('pause').innerHTML = v ? ZP.ICONS.play : ZP.ICONS.pause; $('pause').setAttribute('aria-label', v ? 'Продолжить' : 'Пауза'); ZP.ui.dirty(); };
   Mn.setSpeed = (v) => { ZP.speed = v; $('speed').textContent = '×' + v; $('speed-row').querySelectorAll('[data-speed]').forEach((b) => b.setAttribute('aria-pressed', +b.dataset.speed === v)); };
 
+  function drinkText() {
+    const v = ZP.save.data.settings.drinkAt;
+    $('drink-label').textContent = v > 0 ? `Пить, когда здоровье ≤ ${v}%` : 'Не пить зелья автоматически (0%)';
+    $('drink-hint').textContent = `Героиня выпивает самое маленькое зелье, которого хватит на недостающее здоровье, а если такого нет — самое большое из имеющихся. Пьёт только на лугах, не чаще раза в 1,5 с. Сейчас в сумке зелий: ${ZP.potions.total()}.`;
+  }
   Mn.render = () => {
+    $('drink-at').value = ZP.save.data.settings.drinkAt; drinkText();
     const p = ZP.pwa;
     const btn = $('install-btn'), hint = $('install-hint');
     if (p.installed()) { btn.hidden = true; hint.textContent = 'Игра установлена на этом устройстве. Её можно запускать с главного экрана, прогресс общий.'; }
@@ -20,6 +26,8 @@
 
   Mn.init = () => {
     $('pause').addEventListener('click', () => Mn.setPause(!ZP.paused));
+    $('drink-at').addEventListener('input', (e) => { ZP.save.data.settings.drinkAt = +e.target.value; drinkText(); });
+    $('drink-at').addEventListener('change', () => ZP.save.write());
     $('speed').addEventListener('click', () => Mn.setSpeed(ZP.SPEEDS[(ZP.SPEEDS.indexOf(ZP.speed) + 1) % ZP.SPEEDS.length]));
     $('menu-btn').addEventListener('click', () => ZP.ui.open('win-menu'));
     $('speed-row').innerHTML = ZP.SPEEDS.map((v) => `<button class="ibtn ol" type="button" data-speed="${v}" aria-pressed="${v === 1}">×${v}</button>`).join('');
