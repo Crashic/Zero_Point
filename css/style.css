@@ -179,6 +179,14 @@ body{font-family:var(--f);font-size:14px;line-height:1.35;touch-action:manipulat
 .sell-row{display:flex;flex-wrap:wrap;gap:8px}
 .sell-row .gbtn{flex:1;min-width:130px}
 
+/* версия и список изменений */
+.ver-btn{all:unset;box-sizing:border-box;cursor:pointer;text-align:center;padding:8px;font-family:var(--f);font-size:13px;color:var(--muted);text-decoration:underline dotted;text-underline-offset:3px}
+.ver-btn:hover{color:var(--gold)}
+.ver-btn:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
+.changelog{display:grid;gap:4px}
+.cl-ver{display:flex;align-items:center;gap:8px;margin-top:4px;color:var(--gold);font-size:15px}
+.cl-ver:first-child{margin-top:0}
+
 /* окно персонажа */
 .char-top{display:flex;gap:12px;align-items:center}
 #char-portrait{width:72px;height:72px;image-rendering:pixelated;border:2px solid var(--edge);box-shadow:0 0 0 1px var(--gold);flex:none}

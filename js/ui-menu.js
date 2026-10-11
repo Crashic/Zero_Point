@@ -29,7 +29,11 @@
     $('controls-hint').textContent = touch
       ? 'Героиня охотится сама. Нажмите на оружие в нижней панели, чтобы сменить его. «Навыки» — паутина, «Герой» или портрет — окно персонажа. Нажатие на чат разворачивает его.'
       : 'Героиня охотится сама. Клавиши 1–4 меняют оружие, K — паутина навыков, C — персонаж, пробел — пауза, Esc закрывает окна.';
-    $('version').textContent = 'Zero Point, версия ' + ZP.VERSION;
+    // версия внизу меню: по нажатию — список изменений
+    const vb = $('version-btn'), cl = $('changelog');
+    vb.textContent = `Zero Point · версия ${ZP.VERSION} ▾`;
+    cl.innerHTML = ZP.CHANGELOG.map((r) => `<div class="cl-ver"><b>${r.v}</b>${r.v === ZP.VERSION ? ' <span class="tag">текущая</span>' : ''}</div><ul class="bonus-list">${r.items.map((i) => `<li>${i}</li>`).join('')}</ul>`).join('');
+    vb.addEventListener('click', () => { cl.hidden = !cl.hidden; vb.setAttribute('aria-expanded', !cl.hidden); vb.textContent = `Zero Point · версия ${ZP.VERSION} ${cl.hidden ? '▾' : '▴'}`; if (!cl.hidden) cl.scrollIntoView({ block: 'nearest' }); });
     const rb = $('reset'); let armT = null;
     rb.addEventListener('click', () => {
       if (rb.dataset.armed !== 'true') { rb.dataset.armed = 'true'; rb.textContent = 'Нажмите ещё раз для сброса'; clearTimeout(armT); armT = setTimeout(() => { rb.dataset.armed = 'false'; rb.textContent = 'Сбросить прогресс'; }, 3000); return; }

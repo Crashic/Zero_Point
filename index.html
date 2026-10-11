@@ -129,7 +129,8 @@
           <p class="hint" id="save-hint"></p>
         </div>
         <button class="gbtn red" type="button" id="reset" data-armed="false">Сбросить прогресс</button>
-        <p class="hint" id="version"></p>
+        <button class="ver-btn" type="button" id="version-btn" aria-expanded="false" aria-controls="changelog"></button>
+        <div class="inset changelog" id="changelog" hidden></div>
       </div>
     </div>
   </div>
@@ -137,6 +138,7 @@
 
 <!-- Данные и правила -->
 <script src="js/config.js"></script>
+<script src="js/changelog.js"></script>
 <script src="js/skills-data.js"></script>
 <script src="js/items-data.js"></script>
 <script src="js/save.js"></script>
