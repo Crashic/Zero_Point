@@ -12,7 +12,7 @@
 <link rel="apple-touch-icon" href="sprites/icons/icon-192.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Pixelify+Sans:wght@400;600;700&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Comfortaa:wght@400;600;700&display=swap">
 <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
@@ -32,10 +32,11 @@
       <div class="frame target" id="target" hidden>
         <div class="target-name ol"><span id="target-name"></span><small id="target-lvl"></small></div>
         <div class="pbar red"><i id="bar-thp"></i><span class="ol" id="txt-thp"></span></div>
+        <button class="tbtn" type="button" id="switch-target">Сменить цель</button>
       </div>
     </div>
     <div class="hud-tr">
-      <div class="frame mini"><canvas id="minimap" width="64" height="43"></canvas><div class="mini-label ol" id="map-label">Деревня</div></div>
+      <div class="frame mini" id="mini" role="button" tabindex="0" aria-label="Список врагов на карте"><canvas id="minimap" width="64" height="43"></canvas><div class="mini-label ol" id="map-label">Деревня</div></div>
       <button class="frame coins-pill ol" id="coins-pill" type="button" aria-label="Коины — открыть сумку"><img id="coin-ico" alt=""><span id="hud-coins">0</span></button>
       <div class="btn-row">
         <button class="ibtn" id="pause" type="button" aria-label="Пауза"></button>
@@ -109,6 +110,17 @@
     </div>
   </div>
 
+  <!-- Окно: враги на карте -->
+  <div class="layer" id="win-enemies" hidden>
+    <div class="frame window small" role="dialog" aria-labelledby="we-title">
+      <div class="win-head"><span class="spacer"></span><h2 class="ol" id="we-title">Враги на карте</h2><button class="ibtn close" type="button" aria-label="Закрыть"></button></div>
+      <div class="win-body">
+        <p class="hint" id="enemy-sum"></p>
+        <div class="elist" id="enemy-list"></div>
+      </div>
+    </div>
+  </div>
+
   <!-- Окно: меню -->
   <div class="layer" id="win-menu" hidden>
     <div class="frame window small" role="dialog" aria-labelledby="wm-title">
@@ -164,6 +176,7 @@
 <script src="js/ui-skills.js"></script>
 <script src="js/ui-character.js"></script>
 <script src="js/ui-bag.js"></script>
+<script src="js/ui-enemies.js"></script>
 <script src="js/ui-menu.js"></script>
 <script src="js/pwa.js"></script>
 <script src="js/main.js"></script>

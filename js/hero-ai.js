@@ -9,6 +9,7 @@
     bob: 0, moving: false, hurtFlash: 0,
     target: null, attacker: null, lastHurt: -99, lastAttack: -99,
     attacksLeft: 3, strafe: null, kite: 0, wander: null,
+    forced: false, ignore: {}, avoidId: 0, avoidUntil: 0, kiteDir: null, kiteDirT: 0,
     stuck: 0, lastD: 1e9, goalX: 0, goalY: 0, unstick: 0, unstickDir: 1,
   });
   const AI = (ZP.heroAI = {});
@@ -62,26 +63,70 @@
     if (!H.wander || AI.moveTo(H.wander.x, H.wander.y, dt)) H.wander = { x: U.rnd(100, map.W - 100), y: U.rnd(100, map.H - 100) };
   };
 
+  // цели, которые ИИ сейчас не выбирает сам: брошенная кнопкой «Сменить цель» и зверь, убивший героиню
+  const now = () => ZP.time.clock;
+  const skipAuto = (e) => e.dead || e.returning || (H.ignore[e.id] || 0) > now() || (e.id === H.avoidId && H.avoidUntil > now());
+
   AI.pickTarget = () => {
     let t = H.target;
-    if (t && t.dead) t = H.target = null;
+    if (t && t.dead) { t = H.target = null; H.forced = false; }
+    // цель, выбранная игроком, не меняется сама
+    if (t && H.forced) return;
     // если кто-то бьёт героиню — сначала разобраться с ним
     const att = H.attacker;
-    if (att && !att.dead && att.aggro && ZP.time.clock - H.lastHurt < 3 && t !== att) {
+    if (att && !att.dead && att.aggro && !skipAuto(att) && now() - H.lastHurt < 3 && t !== att) {
       if (!t || !t.aggro || U.dist(H, att) < U.dist(H, t) - 40) { AI.setTarget(att); return; }
     }
     if (t) return;
     let best = null, bs = 1e9;
     for (const e of ZP.enemies.list) {
-      if (e.dead || e.returning) continue;
+      if (skipAuto(e)) continue;
       const sc = U.dist(H, e) + (e.L - 1) * 220 - (e.aggro ? 400 : 0);
       if (sc < bs) { bs = sc; best = e; }
     }
     if (best) AI.setTarget(best);
   };
-  AI.setTarget = (e) => {
-    H.target = e; H.attacksLeft = AI.attacksPerPos(); H.strafe = null; H.kite = 0;
-    ZP.ui.log(`Новая цель: ${e.name}, ур. ${e.L}.`, 'miss');
+  AI.setTarget = (e, forced, why) => {
+    H.target = e; H.forced = !!forced; H.attacksLeft = AI.attacksPerPos(); H.strafe = null; H.kite = 0; H.wander = null;
+    ZP.ui.log(`${why || 'Новая цель'}: ${e.name}, ур. ${e.L}.`, forced ? 'sys' : 'miss');
+    ZP.ui.dirty();
+  };
+  // игрок указал цель: тапом по врагу или из списка врагов
+  AI.forceTarget = (e) => { if (!e || e.dead || H.dead) return; AI.setTarget(e, true, 'Игрок выбрал цель'); };
+  // кнопка «Сменить цель»: бросить текущую и идти к ближайшей другой
+  AI.switchTarget = () => {
+    if (H.dead) return;
+    const cur = H.target;
+    if (cur) H.ignore[cur.id] = now() + 20;
+    let best = null, bd = 1e9;
+    for (const e of ZP.enemies.list) {
+      if (e.dead || e === cur || (e.id === H.avoidId && H.avoidUntil > now())) continue;
+      const d = H.map === 'field' ? U.dist(H, e) : Math.hypot(e.x - ZP.world.maps.field.gates.north.x, e.y - ZP.world.maps.field.gates.north.y);
+      if (d < bd) { bd = d; best = e; }
+    }
+    if (best) AI.setTarget(best, true, 'Смена цели');
+    else { H.target = null; H.forced = false; ZP.ui.log('Других врагов рядом нет.', 'miss'); }
+  };
+
+  // направление отступления: прочь от цели, а если там стена или край карты — в обход
+  AI.retreatDir = (t, dt) => {
+    H.kiteDirT = (H.kiteDirT || 0) - dt;
+    if (H.kiteDirT > 0 && H.kiteDir != null) return H.kiteDir;
+    const map = ZP.world.cur, base = Math.atan2(H.y - t.y, H.x - t.x);
+    const inMap = (x, y) => x > 24 && y > 28 && x < map.W - 24 && y < map.H - 24;
+    let best = null, bs = -1e9;
+    for (const off of [0, 0.5, -0.5, 1, -1, 1.5, -1.5, 2, -2, 2.6, -2.6]) {
+      const a = base + off;
+      let ok = true;
+      for (const step of [30, 60, 90]) { const x = H.x + Math.cos(a) * step, y = H.y + Math.sin(a) * step; if (!inMap(x, y) || !ZP.world.isFree(x, y, H.r + 4)) { ok = false; break; } }
+      if (!ok) continue;
+      const px = H.x + Math.cos(a) * 90, py = H.y + Math.sin(a) * 90;
+      const sc = Math.hypot(px - t.x, py - t.y) - Math.abs(off) * 12;
+      if (sc > bs) { bs = sc; best = a; }
+    }
+    H.kiteDir = best != null ? best : base + Math.PI / 2;
+    H.kiteDirT = 0.35;
+    return H.kiteDir;
   };
 
   AI.engage = (t, dt) => {
@@ -98,8 +143,9 @@
       const [r0, r1] = w.range;
       if (H.kite > 0) {
         H.kite -= dt;
-        const away = Math.atan2(H.y - t.y, H.x - t.x);
-        AI.moveTo(H.x + Math.cos(away) * 60, H.y + Math.sin(away) * 60, dt);
+        const a = AI.retreatDir(t, dt);
+        AI.moveTo(H.x + Math.cos(a) * 60, H.y + Math.sin(a) * 60, dt);
+        if (H.kite <= 0) H.kiteDir = null;
         return;
       }
       if (d > r1 || ZP.world.segBlocked(H, t, 6)) { if (!H.animDur) AI.moveTo(t.x, t.y, dt); return; }
@@ -154,10 +200,12 @@
 
   AI.die = (killer) => {
     if (H.dead) return;
-    H.dead = true; H.deathT = 0; H.hp = 0; H.animDur = 0; H.target = null; H.attacker = null;
+    H.dead = true; H.deathT = 0; H.hp = 0; H.animDur = 0; H.target = null; H.attacker = null; H.forced = false;
+    // после воскрешения не идти снова к тому, кто убил (5 минут или пока он жив)
+    H.avoidId = killer.id; H.avoidUntil = ZP.time.clock + 300;
     AI.clearTimers();
     ZP.save.data.deaths++;
-    ZP.ui.log(`${ZP.HERO_NAME} погибает. Её одолел зверь: ${killer.name}, ур. ${killer.L}. Воскрешение в деревне…`, 'bad');
+    ZP.ui.log(`${ZP.HERO_NAME} погибает. Её одолел враг: ${killer.name}, ур. ${killer.L}. Воскрешение в деревне…`, 'bad');
     ZP.enemies.calmAll();
     ZP.save.write();
   };

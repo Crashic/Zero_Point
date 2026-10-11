@@ -38,6 +38,21 @@
     const ax = (v, size, before, after, M) => { const lo = before - M, hi = size + M - after; return lo > hi ? (lo + hi) / 2 : U.clamp(v, lo, hi); };
     return { x: ax(H.x, map.W, viewCX / s, (cw - viewCX) / s, 120), y: ax(H.y - 30, map.H, (viewCY - topEdge) / s, (botEdge - viewCY) / s, 90) };
   }
+  // экран (CSS-пиксели) → мир
+  R.screenToWorld = (sx, sy) => { const o = R.lastO || { ox: 0, oy: 0 }; return { x: ((sx * dpr) / P - o.ox) * g, y: ((sy * dpr) / P - o.oy) * g }; };
+  // враг под пальцем/курсором (с запасом для пальца)
+  R.enemyAt = (sx, sy) => {
+    if (ZP.world.cur.id !== 'field') return null;
+    const w = R.screenToWorld(sx, sy), pad = 12 + 10 / s;
+    let best = null, bd = 1e9;
+    for (const e of ZP.enemies.list) {
+      if (e.dead) continue;
+      if (w.x < e.x - e.r - pad || w.x > e.x + e.r + pad || w.y < e.y - e.h - pad || w.y > e.y + pad) continue;
+      const d = Math.hypot(w.x - e.x, w.y - (e.y - e.h / 2));
+      if (d < bd) { bd = d; best = e; }
+    }
+    return best;
+  };
   R.snapCamera = () => { if (!ZP.world.cur) return; const t = camTarget(); R.cam.x = t.x; R.cam.y = t.y; };
   R.updateCamera = (dt) => { const t = camTarget(), k = Math.min(1, dt * 6); R.cam.x += (t.x - R.cam.x) * k; R.cam.y += (t.y - R.cam.y) * k; };
 
@@ -46,6 +61,7 @@
     if (!map || !cv.width) return;
     const camBx = Math.round(R.cam.x / g), camBy = Math.round(R.cam.y / g);
     const ox = vcxB - camBx, oy = vcyB - camBy;
+    R.lastO = { ox, oy };
     const c = lctx;
     c.setTransform(1, 0, 0, 1, 0, 0); c.imageSmoothingEnabled = false;
     c.fillStyle = '#22401c'; c.fillRect(0, 0, lb.width, lb.height);
@@ -107,7 +123,7 @@
     vctx.textAlign = 'center'; vctx.lineJoin = 'round';
     const label = (text, x, y, size, color, weight) => {
       const [sx, sy] = scr(x, y);
-      vctx.font = `${weight || 600} ${size * dpr}px "Pixelify Sans", monospace`;
+      vctx.font = `${weight || 600} ${size * dpr}px Comfortaa, "Segoe UI", sans-serif`;
       vctx.lineWidth = 3 * dpr; vctx.strokeStyle = 'rgba(0,0,0,.9)'; vctx.strokeText(text, sx, sy);
       vctx.fillStyle = color; vctx.fillText(text, sx, sy);
     };
@@ -117,18 +133,18 @@
       vctx.fillStyle = '#3a1410'; vctx.fillRect(Math.round(sx - W / 2), Math.round(sy), Math.round(W), Math.round(Hh));
       vctx.fillStyle = color; vctx.fillRect(Math.round(sx - W / 2), Math.round(sy), Math.round(W * U.clamp(frac, 0, 1)), Math.round(Hh));
     };
-    for (const gt of Object.values(map.gates)) if (inView(gt.x, gt.y, 80)) label('Выход: ' + gt.label,gt.x + gt.nx * 6 + (gt.side === 'e' ? -40 : gt.side === 'w' ? 44 : 0), gt.y + (gt.side === 's' ? -48 : gt.side === 'n' ? 70 : -60), 11, '#ffd36a', 700);
+    for (const gt of Object.values(map.gates)) if (inView(gt.x, gt.y, 80)) label('Выход: ' + gt.label,gt.x + gt.nx * 6 + (gt.side === 'e' ? -40 : gt.side === 'w' ? 44 : 0), gt.y + (gt.side === 's' ? -48 : gt.side === 'n' ? 70 : -60), 10, '#ffd36a', 700);
     if (map.id === 'village') { const d = ZP.world.dummy(); if (d) label('Манекен', d.x, d.y - 54, 10, '#f0d78a', 600); label('Камень воскрешения', map.respawn.x, map.respawn.y - 76, 10, '#a8dcff', 600); }
     if (map.id === 'field') {
       for (const e of ZP.enemies.list) {
         if (e.dead || !inView(e.x, e.y, 40)) continue;
         const isT = e === H.target;
         if (isT || e.aggro || e.hp < e.st.hp) bar(e.x, e.y - e.h - 9, 26, e.hp / e.st.hp, '#e2463a');
-        label(`${e.name} ${e.L}`, e.x, e.y - e.h - 12, isT ? 11 : 10, ZP.levelColor(e.L), isT ? 700 : 600);
+        label(`${e.name} ${e.L}`, e.x, e.y - e.h - 12, isT ? 12 : 10, ZP.levelColor(e.L), isT ? 700 : 600);
       }
     }
     if (!H.dead) { label(ZP.HERO_NAME, H.x, H.y - 66, 12, ZP.fx.COL.name, 700); if (map.id === 'field' || H.hp < H.max) bar(H.x, H.y - 62, 30, H.hp / H.max, '#4ad66a'); }
-    for (const f of ZP.fx.floats) { vctx.globalAlpha = Math.min(1, f.life * 1.5); label(f.text, f.x, f.y, f.big ? 15 : 13, f.c, 700); }
+    for (const f of ZP.fx.floats) { vctx.globalAlpha = Math.min(1, f.life * 1.5); label(f.text, f.x, f.y, f.big ? 12 : 10, f.c, 700); }
     vctx.globalAlpha = 1;
   };
 

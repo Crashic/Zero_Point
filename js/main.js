@@ -11,6 +11,7 @@
     ZP.ui.init();
     ZP.uiSkills.init();
     ZP.uiBag.init();
+    ZP.uiEnemies.init();
     ZP.uiMenu.init();
     ZP.pwa.init();
     ZP.render.layout();
@@ -20,17 +21,19 @@
     ZP.ui.log(s.kills || s.deaths ? `С возвращением! ${ZP.HERO_NAME} снова в деревне. Побед: ${s.kills}.` : `${ZP.HERO_NAME} выходит из деревни на охоту в Звериные луга.`, 'sys');
 
     new ResizeObserver(() => ZP.render.layout()).observe($('game'));
-    if (document.fonts && document.fonts.load) document.fonts.load('600 14px "Pixelify Sans"').then(() => ZP.render.layout()).catch(() => {});
+    if (document.fonts && document.fonts.load) Promise.all([document.fonts.load('700 12px Comfortaa'), document.fonts.load('600 10px Comfortaa')]).then(() => ZP.render.layout()).catch(() => {});
 
     // клавиатура
     window.addEventListener('keydown', (e) => {
-      if (e.key === 'Escape') { ['win-skills', 'win-char', 'win-menu', 'win-bag'].forEach((w) => ZP.ui.close(w)); return; }
+      if (e.key === 'Escape') { ['win-skills', 'win-char', 'win-menu', 'win-bag', 'win-enemies'].forEach((w) => ZP.ui.close(w)); return; }
       if (e.target.closest && e.target.closest('button,.node,[role="button"]') && (e.key === ' ' || e.key === 'Enter')) return;
       const i = ['1', '2', '3', '4'].indexOf(e.key);
       if (i >= 0) { ZP.heroAI.selectWeapon(ZP.ORDER[i]); ZP.ui.dirty(); }
       const key = e.key.toLowerCase();
       if (key === 'k' || key === 'л') ZP.ui.toggle('win-skills');
       if (key === 'c' || key === 'с') ZP.ui.toggle('win-char');
+      if (key === 'm' || key === 'ь') ZP.ui.toggle('win-enemies');
+      if (key === 'tab') { e.preventDefault(); ZP.heroAI.switchTarget(); }
       if (key === 'i' || key === 'ш' || key === 'b' || key === 'и') ZP.ui.toggle('win-bag');
       if (e.key === ' ') { e.preventDefault(); ZP.uiMenu.setPause(!ZP.paused); }
     });

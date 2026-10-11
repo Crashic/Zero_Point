@@ -22,13 +22,14 @@
   UI.skillsChanged = () => { UI.dirty(); if (ZP.uiSkills && !$('win-skills').hidden) ZP.uiSkills.render(); };
 
   // окна
-  const wins = ['win-skills', 'win-char', 'win-menu', 'win-bag'];
+  const wins = ['win-skills', 'win-char', 'win-menu', 'win-bag', 'win-enemies'];
   UI.open = (id) => {
     for (const w of wins) if (w !== id) $(w).hidden = true;
     if (id === 'win-skills') ZP.uiSkills.open();
     if (id === 'win-char') ZP.uiChar.render();
     if (id === 'win-menu') ZP.uiMenu.render();
     if (id === 'win-bag') ZP.uiBag.open();
+    if (id === 'win-enemies') ZP.uiEnemies.render(true);
     $(id).hidden = false;
     const c = $(id).querySelector('.close'); if (c) c.focus({ preventScroll: true });
   };
@@ -60,6 +61,15 @@
     $('log').addEventListener('click', () => $('log').classList.toggle('open'));
     $('coin-ico').src = ZP.pix.coinUrl();
     $('coins-pill').addEventListener('click', () => UI.open('win-bag'));
+    $('switch-target').addEventListener('click', (e) => { e.stopPropagation(); ZP.heroAI.switchTarget(); UI.render(); });
+    $('mini').addEventListener('click', () => UI.open('win-enemies'));
+    $('mini').addEventListener('keydown', (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); e.stopPropagation(); UI.open('win-enemies'); } });
+    // тап по врагу — героиня бежит атаковать его
+    const arena = $('arena');
+    arena.addEventListener('click', (ev) => {
+      const r = arena.getBoundingClientRect(), e = ZP.render.enemyAt(ev.clientX - r.left, ev.clientY - r.top);
+      if (e) { ZP.heroAI.forceTarget(e); ZP.fx.float(e.x, e.y - e.h - 30, 'Цель!', ZP.fx.COL.accent, true); UI.render(); }
+    });
     UI.mapChanged();
   };
 
@@ -101,6 +111,7 @@
     $('hud-coins').textContent = ZP.save.data.coins;
     const nb = ZP.inventory.fresh.size, bb = $('s-bag').querySelector('.badge'); bb.hidden = nb <= 0; bb.textContent = nb;
     if (!$('win-bag').hidden) ZP.uiBag.render();
+    if (!$('win-enemies').hidden) ZP.uiEnemies.render();
     // баннер
     const bn = $('banner');
     if (H.dead) { bn.hidden = false; bn.className = 'banner ol dead'; $('banner-title').textContent = `${ZP.HERO_NAME} погибла`; $('banner-sub').textContent = `Воскрешение в деревне через ${Math.max(1, Math.ceil(ZP.RESPAWN_TIME - H.deathT))}…`; }

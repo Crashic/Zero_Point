@@ -187,7 +187,9 @@
         W.setMap('village');
         ZP.heroAI.revive();
       }
-      H.target = null; H.attacker = null; H.lastD = 1e9;
+      const keep = p.type === 'travel' && H.forced && H.target && !H.target.dead;
+      if (!keep) { H.target = null; H.forced = false; }
+      H.attacker = null; H.lastD = 1e9;
       ZP.combat.projectiles.length = 0; ZP.fx.clear();
       ZP.render.snapCamera();
       fadeEl().classList.remove('on');

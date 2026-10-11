@@ -30,7 +30,7 @@
   C.apply = (k, t, res) => {
     if (!t || t.dead) return;
     const H = ZP.hero;
-    t.aggro = true; t.returning = false;
+    t.aggro = true; t.returning = false; t.chaseT = ZP.CHASE_TIME;
     const top = t.y - t.h - 8;
     if (res.type === 'miss') { ZP.fx.float(t.x, top, 'Промах', COL().miss); return; }
     if (res.type === 'dodge') { ZP.fx.float(t.x, top, 'Уворот', COL().muted); return; }
