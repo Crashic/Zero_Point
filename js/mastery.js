@@ -25,7 +25,7 @@
   // перезарядка между атаками (без анимации замаха)
   M.cooldown = (k) => {
     const w = ZP.WEAPONS[k], b = M.BONUS[k];
-    let cd = w.cd / (1 + 0.4 * (sk(k).m / ZP.MAX)) / (1 + b.spd) / ZP.stats.attackSpeedMul(ZP.PLAYER_BASE);
+    let cd = w.cd / (1 + 0.4 * (sk(k).m / ZP.MAX)) / (1 + b.spd) / ZP.stats.attackSpeedMul(ZP.pstats());
     if (k === 'staff' && b.keys.has('arcane')) cd *= 0.8;
     return cd;
   };

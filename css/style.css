@@ -306,3 +306,52 @@ input[type=range]{width:100%;accent-color:var(--gold);height:28px}
 .potion-box:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
 .chat{width:min(420px,calc(100% - 88px))}
 .tag.ok{background:var(--green);color:#10200a}
+
+/* Снаряжение: кукла персонажа */
+.doll{display:grid;grid-template-columns:54px 1fr 54px;gap:8px;align-items:start;margin-top:8px}
+.dcol{display:grid;gap:6px}
+.dslot{all:unset;box-sizing:border-box;position:relative;width:54px;height:54px;display:grid;place-items:center;cursor:pointer;background:#120b05;border:2px solid var(--edge);box-shadow:inset 0 0 0 1px var(--rc,#4a3415)}
+.dslot img{width:80%;height:80%;image-rendering:pixelated}
+.dslot span{font-size:8px;line-height:9px;color:var(--muted);text-align:center;padding:2px;word-break:break-word}
+.dslot.on{box-shadow:inset 0 0 0 2px var(--gold),0 0 10px rgba(242,196,90,.5)}
+.dslot.off img{opacity:.4;filter:grayscale(.7)}
+.dslot:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
+.dmid{display:grid;justify-items:center;gap:8px}
+.dmid canvas{width:min(150px,100%);aspect-ratio:1;image-rendering:pixelated;background:radial-gradient(#3a2a14,#120b05 70%);border:2px solid var(--edge)}
+.dbonus{display:flex;flex-wrap:wrap;justify-content:center;gap:4px 10px;font-size:10px;color:var(--muted)}
+.dbonus b{color:var(--green)}
+.doll-card{display:grid;gap:8px;margin-top:10px}
+.doll-card h4{margin:0}
+.gplus{font-style:normal;color:var(--green)}
+.hint.warn{color:var(--red)}
+.fit-list{display:grid;gap:6px}
+.fit-row{display:grid;grid-template-columns:36px 1fr auto;gap:8px;align-items:center;font-size:10px}
+.fit-row img{width:36px;height:36px;image-rendering:pixelated;background:#120b05;border:2px solid var(--edge)}
+.fit-row i{font-style:normal;font-weight:700;display:block}
+.fit-row small{color:var(--muted)}
+/* карточка и сравнение */
+.gstats{display:grid;gap:3px;margin:8px 0}
+.mline span.up,.cmp td.up{color:var(--green)}
+.cmp td.down{color:var(--red)}
+.cmp-box{display:grid;gap:6px;background:rgba(16,10,4,.75);border:2px solid var(--edge);padding:8px 10px}
+.cmp-t{font-size:10px;color:var(--gold)}
+.cmp-off{display:flex;flex-wrap:wrap;gap:6px 12px}
+.cmp-off span{display:flex;align-items:center;gap:6px;font-size:10px}
+.cmp-off img{width:28px;height:28px;image-rendering:pixelated;background:#120b05;border:2px solid var(--edge)}
+.cmp-off i{font-style:normal;font-weight:700}
+.cmp{width:100%;border-collapse:collapse;font-size:10px;font-variant-numeric:tabular-nums}
+.cmp th{font-weight:600;color:var(--muted);text-align:right;padding:2px 4px}
+.cmp td{padding:2px 4px;text-align:right;color:#ffd877}
+.cmp td:first-child{text-align:left;color:var(--text)}
+.cmp td:last-child{font-weight:700}
+/* окно выпавшего предмета */
+.drop-layer{z-index:6}
+.drop-body{display:grid;gap:8px}
+.drop-bag{justify-self:center;min-width:140px}
+.drop-time{height:8px}
+.drop-time i{background:linear-gradient(#ffe39a,#d89a2a);transition:none}
+.sec-row{display:flex;align-items:center;justify-content:space-between;gap:8px}
+.sec-row .sec-h small{font-size:10px;color:var(--muted)}
+.gslot{box-shadow:inset 0 0 0 1px var(--rc)}
+.icard-head + .gstats + .hint, .gstats + .hint{margin-bottom:6px}
+.doll-card .sell-row, .inset > .sell-row{margin-top:8px}

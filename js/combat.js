@@ -54,6 +54,7 @@
     ZP.fx.float(e.x, e.y - e.h - 28, got ? '+' + U.pctTxt(got) + ' владения' : 'Повержен', COL().xp, true);
     ZP.ui.log(`${ZP.HERO_NAME} побеждает: ${e.name}, ур. ${e.L}.` + (got ? ` ${ZP.WEAPONS[k].name}: +${U.pctTxt(got)} за победу.` : ''), 'gold');
     ZP.inventory.onKill(e);
+    ZP.gear.onKill(e);
     const H = ZP.hero;
     if (H.target === e) H.target = null;
     if (H.attacker === e) H.attacker = null;
@@ -67,9 +68,10 @@
     if (H.dead || H.map !== 'field') return;
     e.atkAnim = 0.3;
     const head = H.y - ZP.HERO_FX + 12;
+    const ps = ZP.pstats();
     if (Math.random() > ZP.stats.enemyHitChance) { ZP.fx.float(H.x + U.rnd(-6, 6), head, 'Мимо', COL().muted); return; }
-    if (Math.random() < ZP.stats.dodgeChance(ZP.PLAYER_BASE)) { ZP.fx.float(H.x + U.rnd(-6, 6), head, 'Уворот', COL().name); return; }
-    const dmg = ZP.stats.rollDamage(ZP.stats.enemyRaw(e.st), ZP.PLAYER_BASE);
+    if (Math.random() < ZP.stats.dodgeChance(ps)) { ZP.fx.float(H.x + U.rnd(-6, 6), head, 'Уворот', COL().name); return; }
+    const dmg = ZP.stats.rollDamage(ZP.stats.enemyRaw(e.st), ps);
     H.hp -= dmg; H.lastHurt = ZP.time.clock; H.attacker = e; H.hurtFlash = 0.2;
     ZP.fx.float(H.x + U.rnd(-8, 8), head, '−' + dmg, COL().hurt, true);
     ZP.fx.burst(H.x, H.y - 40, 5, ['#ff7a6a', '#c8392b', '#ffd0c8'], 90);

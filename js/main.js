@@ -7,12 +7,15 @@
     ZP.mastery.computeAll();
     ZP.world.init();
     ZP.heroAI.init();
+    ZP.gear.init();
     ZP.enemies.init();
     ZP.ui.init();
     ZP.uiSkills.init();
     ZP.uiBag.init();
+    ZP.uiChar.init();
     ZP.uiEnemies.init();
     ZP.uiDeath.init();
+    ZP.uiDrop.init();
     ZP.uiMenu.init();
     ZP.pwa.init();
     ZP.render.layout();
@@ -74,6 +77,7 @@
     ZP.render.draw();
     ZP.ui.renderFast();
     ZP.uiDeath.tick(now);
+    ZP.uiDrop.tick(now);
     if (now - lastSlow > 150) {
       lastSlow = now;
       ZP.render.drawMinimap($('minimap'));

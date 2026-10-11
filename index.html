@@ -86,6 +86,10 @@
           <canvas id="char-portrait" width="32" height="32"></canvas>
           <div><div class="char-name ol" id="char-name">Аэлис</div><p class="hint" id="char-sub"></p></div>
         </div>
+        <div class="inset"><h4>Снаряжение</h4>
+          <div class="doll" id="doll"></div>
+          <div class="doll-card" id="doll-card"></div>
+        </div>
         <div class="char-grid">
           <div class="inset"><h4>Характеристики</h4><div id="char-stats"></div></div>
           <div class="inset"><h4 id="char-combat-title">В бою</h4><div id="char-combat"></div></div>
@@ -108,6 +112,8 @@
         </div>
         <h4 class="sec-h ol">Зелья</h4>
         <div class="bag-grid potions" id="potion-grid"></div>
+        <div class="sec-row"><h4 class="sec-h ol">Снаряжение <small id="gear-count"></small></h4><button class="tbtn" type="button" id="gear-sell-all" data-armed="false">Продать всё снаряжение</button></div>
+        <div class="bag-grid" id="gear-grid"></div>
         <h4 class="sec-h ol">Добыча</h4>
         <div class="bag-grid" id="bag-grid"></div>
         <div class="inset item-card" id="item-card"></div>
@@ -158,6 +164,18 @@
     </div>
   </div>
 
+  <!-- Окно: выпало снаряжение (поверх остальных окон, очередь находок) -->
+  <div class="layer drop-layer" id="win-drop" hidden>
+    <div class="frame window small" role="dialog" aria-labelledby="wdr-title">
+      <div class="win-head"><h2 class="ol" id="wdr-title">Новое снаряжение</h2></div>
+      <div class="win-body">
+        <div class="drop-body" id="drop-body"></div>
+        <div class="pbar gold drop-time"><i id="drop-bar"></i></div>
+        <p class="hint center" id="drop-timer"></p>
+      </div>
+    </div>
+  </div>
+
   <!-- Окно: меню -->
   <div class="layer" id="win-menu" hidden>
     <div class="frame window small" role="dialog" aria-labelledby="wm-title">
@@ -197,6 +215,7 @@
 <script src="js/skills-data.js"></script>
 <script src="js/items-data.js"></script>
 <script src="js/potions-data.js"></script>
+<script src="js/gear-data.js"></script>
 <script src="js/save.js"></script>
 <script src="js/stats.js"></script>
 <script src="js/mastery.js"></script>
@@ -214,6 +233,7 @@
 <script src="js/combat.js"></script>
 <script src="js/inventory.js"></script>
 <script src="js/potions.js"></script>
+<script src="js/gear.js"></script>
 <script src="js/hero-ai.js"></script>
 <script src="js/render.js"></script>
 <!-- Интерфейс -->
@@ -223,6 +243,7 @@
 <script src="js/ui-bag.js"></script>
 <script src="js/ui-enemies.js"></script>
 <script src="js/ui-death.js"></script>
+<script src="js/ui-drop.js"></script>
 <script src="js/ui-menu.js"></script>
 <script src="js/pwa.js"></script>
 <script src="js/main.js"></script>

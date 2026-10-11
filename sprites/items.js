@@ -57,6 +57,30 @@
   };
   PIX.potionUrl = (id) => PIX.url('pot:' + id, POT[id].rows, POT[id].pal, 4);
 
+  // снаряжение: один рисунок на вид, цвет — по качеству (a — основной, b — тень, c — блик)
+  const GEAR = {
+    helm: ['..........', '...oooo...', '..occaao..', '.ocaaaaao.', '.oaaaaaao.', '.oabbbbao.', '.oao..oao.', '.obo..obo.', '..o....o..', '..........'],
+    shoulders: ['..........', '..........', '.ooo..ooo.', 'occaooacco', 'oaaaooaaao', 'obbaooabbo', '.obo..obo.', '..o....o..', '..........', '..........'],
+    chest: ['..oo..oo..', '.occooaco.', 'occaaaaaco', 'obaaaaaabo', '.oaacaaao.', '.oaaaaaao.', '.obbhhbbo.', '.oaaaaaao.', '..oooooo..', '..........'],
+    bracers: ['..........', '...oooo...', '..ocaaao..', '..obbbbo..', '..ocaaao..', '..oaaaao..', '..obbbbo..', '..ocaaao..', '...oooo...', '..........'],
+    gloves: ['..........', '.o.o.o....', 'oaoaoao...', 'oaoaoaooo.', 'oaaaaaoco.', 'oaaaaaaao.', '.oaaaaao..', '.obbbbbo..', '.occccco..', '..ooooo...'],
+    belt: ['..........', '..........', '..........', 'oooooooooo', 'oaaasssaao', 'oaaas.saao', 'oaaasssaao', 'oooooooooo', '..........', '..........'],
+    pants: ['..........', '.oooooooo.', '.obbhhbbo.', '.oaaaaaao.', '.oaaooaao.', '.oao..oao.', '.oao..oao.', '.oco..oco.', '.ooo..ooo.', '..........'],
+    greaves: ['...oooo...', '..occaao..', '..oaaaao..', '..obbbbo..', '..oaaaao..', '..oaaaao..', '..obbbbo..', '..oaaaao..', '...oaao...', '....oo....'],
+    boots: ['..........', '..oooo....', '..ocao....', '..oaao....', '..oaao....', '..oaaooo..', '..oaaaaao.', '.oaaaaaco.', '.obbbbbbo.', '..oooooo..'],
+    dagger: ['..........', '.......oo.', '......osco', '.....osso.', '....osso..', '..o.oso...', '..ooso....', '..oaao....', '.ohoo.....', 'oho.......'],
+    sword: ['........oo', '.......oco', '......osco', '.....osso.', '....osso..', '.o.osso...', '.oaoso....', '..oao.....', '.oho.o....', 'oho.......'],
+    staff: ['.....oooo.', '....occao.', '....ocaao.', '....oaabo.', '.....oho..', '....oho...', '...oho....', '..oho.....', '.oho......', 'oho.......'],
+    bow: ['.oo.......', '.oaoo.....', '.os.ao....', '.os..ao...', '.os..co...', '.os..ao...', '.os..ao...', '.os.ao....', '.oaoo.....', '.oo.......'],
+  };
+  const QPAL = [
+    { a: '#9a8a78', b: '#6a5c4c', c: '#c8b8a2' },
+    { a: '#5cae4e', b: '#3a7a34', c: '#a8e08a' },
+    { a: '#4a8ae0', b: '#2a5aa8', c: '#a8d0ff' },
+    { a: '#b07aff', b: '#7a4ad8', c: '#ffd84a' },
+  ];
+  PIX.gearUrl = (type, q) => PIX.url(`gear:${type}:${q}`, GEAR[type], Object.assign({ o: O, h: '#8a5a2e', s: '#dfe6ec' }, QPAL[q]), 4);
+
   PIX.itemUrl = (id) => PIX.url('item:' + id, ICON[id].rows, ICON[id].pal, 4);
   PIX.itemCanvas = (id) => PIX.cache['cv:' + id] || (PIX.cache['cv:' + id] = PIX.canvas(ICON[id].rows, ICON[id].pal));
   PIX.coinUrl = () => PIX.url('coin', COIN.rows, COIN.pal, 3);

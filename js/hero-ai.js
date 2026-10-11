@@ -16,8 +16,8 @@
   const B = () => ZP.mastery.BONUS[H.weapon];
 
   AI.init = () => {
-    H.max = ZP.PLAYER_BASE.hp; H.hp = H.max;
     H.weapon = ZP.save.data.current;
+    H.max = ZP.pstats().hp; H.hp = H.max;
     const sp = ZP.world.maps.village.respawn; H.x = sp.x; H.y = sp.y; H.map = 'village';
   };
   AI.speed = () => { const b = B(), shadow = H.weapon === 'dagger' && b.keys.has('shadowstep'); return ZP.HERO_SPEED * (1 + b.move) * (shadow ? 1.8 : 1); };
@@ -238,6 +238,7 @@
     H.attacksLeft = AI.attacksPerPos();
     ZP.combat.projectiles = ZP.combat.projectiles.filter((p) => p.k === k);
     AI.clearTimers();
+    ZP.gear.refresh();
     if (!H.dead) ZP.fx.float(H.x, H.y - ZP.HERO_FX, 'Берёт ' + ZP.WEAPONS[k].acc4, ZP.fx.COL.fg);
     ZP.ui.log(`${ZP.HERO_NAME} меняет оружие: ${ZP.WEAPONS[k].acc4}.`, 'sys');
     ZP.save.write();

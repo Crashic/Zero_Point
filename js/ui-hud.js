@@ -36,7 +36,7 @@
   };
   UI.close = (id) => { if (id === 'win-death') return; $(id).hidden = true; if (id === 'win-bag') { ZP.inventory.fresh.clear(); UI.render(); } };
   UI.toggle = (id) => ($(id).hidden ? UI.open(id) : UI.close(id));
-  UI.anyOpen = () => wins.some((w) => !$(w).hidden);
+  UI.anyOpen = () => wins.some((w) => !$(w).hidden) || !$('win-drop').hidden;
 
   UI.init = () => {
     for (const w of wins) {

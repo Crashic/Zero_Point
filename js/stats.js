@@ -22,7 +22,7 @@
     // множитель входящего урона от защиты
     reduction(s) { return 50 / (50 + s.def); },
     attackSpeedMul(s) { return 1 + s.agi * 0.01; },
-    playerRaw(k) { const w = ZP.WEAPONS[k], p = ZP.PLAYER_BASE; return p.atk + w.base + p[w.attr] * w.attrK; },
+    playerRaw(k) { const w = ZP.WEAPONS[k], p = ZP.pstats(); return p.atk + w.base + p[w.attr] * w.attrK; },
     enemyRaw(s) { return s.atk + s.str * 0.5; },
     rollDamage(raw, target) { return Math.max(1, Math.round(raw * U.rnd(0.85, 1.15) * this.reduction(target))); },
     enemyHitChance: 0.85,

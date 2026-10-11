@@ -18,6 +18,9 @@
     coins: 0,
     coinsEarned: 0,
     potions: {},
+    equip: {},
+    gear: [],
+    gearQueue: [],
     settings: { drinkAt: 30, autobuy: {}, autosellOn: false, autosellRar: [true, false, false, false], similar: false, similarLevel: 1 },
     savedAt: 0,
   });
@@ -60,6 +63,16 @@
         d.coins = Math.max(0, raw.coins | 0);
         d.coinsEarned = Math.max(0, raw.coinsEarned | 0);
         if (raw.potions && typeof raw.potions === 'object') for (const [id, n] of Object.entries(raw.potions)) if (ZP.POTIONS[id] && n > 0) d.potions[id] = n | 0;
+        // снаряжение: только существующие предметы и подходящие слоты
+        if (raw.equip && typeof raw.equip === 'object') for (const [slot, id] of Object.entries(raw.equip)) {
+          const g = ZP.gearDef(id); if (!g || !ZP.EQUIP_SLOTS.includes(slot)) continue;
+          const ok = g.slot === 'hand' ? (slot === 'right' || (slot === 'left' && !g.twoHand)) : g.slot === slot;
+          if (ok) d.equip[slot] = id;
+        }
+        if (d.equip.left && d.equip.right && ZP.gearDef(d.equip.right).twoHand) delete d.equip.left;
+        if (Array.isArray(raw.gear)) d.gear = raw.gear.filter((id) => ZP.gearDef(id));
+        // невыбранные при закрытии игры предметы — в сумку
+        if (Array.isArray(raw.gearQueue)) d.gear.push(...raw.gearQueue.filter((id) => ZP.gearDef(id)));
         const rs = raw.settings || {};
         if (typeof rs.drinkAt === 'number') d.settings.drinkAt = Math.max(0, Math.min(100, Math.round(rs.drinkAt)));
         if (rs.autobuy && typeof rs.autobuy === 'object') for (const [id, n] of Object.entries(rs.autobuy)) if (ZP.POTIONS[id]) d.settings.autobuy[id] = Math.max(0, Math.min(ZP.POTION_MAX_AUTOBUY, n | 0));
