@@ -139,9 +139,9 @@
         if (res.type === 'hit' && Math.random() < b.dbl) setTimeoutGame(0.13, () => { if (H.weapon === k && H.target === t && !t.dead) ZP.combat.apply(k, t, ZP.combat.roll(k, t, { label: 'Двойной удар' })); });
       }
     } else {
-      if (k === 'bow' && b.keys.has('volley') && H.attackNo % 4 === 0) { ZP.combat.shoot(k, t, -1); ZP.combat.shoot(k, t, 0); ZP.combat.shoot(k, t, 1); ZP.fx.float(H.x, H.y - 118, 'Залп!', ZP.fx.COL.accent); }
+      if (k === 'bow' && b.keys.has('volley') && H.attackNo % 4 === 0) { ZP.combat.shoot(k, t, -1); ZP.combat.shoot(k, t, 0); ZP.combat.shoot(k, t, 1); ZP.fx.float(H.x, H.y - ZP.HERO_FX, 'Залп!', ZP.fx.COL.accent); }
       else ZP.combat.shoot(k, t, 0);
-      if (Math.random() < b.dbl) setTimeoutGame(0.16, () => { if (H.weapon === k && !t.dead) { ZP.combat.shoot(k, t, 0); ZP.fx.float(H.x, H.y - 118, k === 'bow' ? 'Вторая стрела' : 'Вторая сфера', ZP.fx.COL.fg); } });
+      if (Math.random() < b.dbl) setTimeoutGame(0.16, () => { if (H.weapon === k && !t.dead) { ZP.combat.shoot(k, t, 0); ZP.fx.float(H.x, H.y - ZP.HERO_FX, k === 'bow' ? 'Вторая стрела' : 'Вторая сфера', ZP.fx.COL.fg); } });
     }
     H.attacksLeft--;
   };
@@ -176,7 +176,7 @@
     H.attacksLeft = AI.attacksPerPos();
     ZP.combat.projectiles = ZP.combat.projectiles.filter((p) => p.k === k);
     AI.clearTimers();
-    if (!H.dead) ZP.fx.float(H.x, H.y - 118, 'Берёт ' + ZP.WEAPONS[k].acc4, ZP.fx.COL.fg);
+    if (!H.dead) ZP.fx.float(H.x, H.y - ZP.HERO_FX, 'Берёт ' + ZP.WEAPONS[k].acc4, ZP.fx.COL.fg);
     ZP.ui.log(`${ZP.HERO_NAME} меняет оружие: ${ZP.WEAPONS[k].acc4}.`, 'sys');
     ZP.save.write();
   };

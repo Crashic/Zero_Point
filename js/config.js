@@ -1,7 +1,7 @@
 // Общие константы, оружие, иконки и вспомогательные функции.
 window.ZP = window.ZP || {};
 (function (ZP) {
-  ZP.VERSION = '0.8';
+  ZP.VERSION = '0.9';
   ZP.HERO_NAME = 'Аэлис';
 
   ZP.MAX = 10000;          // владение хранится в сотых долях процента: 10000 = 100,00%
@@ -9,9 +9,11 @@ window.ZP = window.ZP || {};
   ZP.START_ACC = 0.10;     // стартовая точность любого оружия
   ZP.AGGRO = 100;          // радиус агро зверей, пиксели мира
   ZP.RESPAWN_TIME = 3;     // секунд до воскрешения
-  ZP.ENEMY_COUNT = 36;     // сколько зверей одновременно на лугах
+  ZP.ENEMY_COUNT = 44;     // сколько врагов одновременно на лугах
   ZP.ENEMY_RESPAWN = 12;   // через сколько секунд появляется новый зверь
   ZP.HERO_SPEED = 150;
+  ZP.HERO_FX = 80;         // высота над ступнями для всплывающих надписей героини
+  ZP.SPRITE_PX = 3;        // размер пикселя спрайта в пикселях мира (номинальный)
 
   // reach — дальность ближнего удара (от края цели), range — дистанция стрельбы
   ZP.WEAPONS = {
@@ -30,6 +32,7 @@ window.ZP = window.ZP || {};
     bow: sv('<path d="M12 6c18 4 30 16 30 36"/><path d="M12 6l30 36" stroke-width="1.5"/><path d="M8 40l26-26M30 12h5v5"/>'),
     staff: sv('<path d="M12 42l20-24"/><circle cx="35" cy="13" r="6"/><path d="M35 3v3M44 13h-2M41 6l-2 2"/>'),
     web: sv('<circle cx="24" cy="24" r="4" fill="currentColor"/><path d="M24 6v36M8 15l32 18M8 33l32-18"/><path d="M24 14l9 5v10l-9 5-9-5V19z" stroke-width="2"/>'),
+    bag: sv('<path d="M17 14v-3a7 7 0 0 1 14 0v3"/><path d="M9 16h30l-3 26H12z"/><path d="M19 24h10"/>'),
     person: sv('<circle cx="24" cy="15" r="7"/><path d="M10 42c0-9 6-15 14-15s14 6 14 15z"/>'),
     pause: '<svg viewBox="0 0 16 16" shape-rendering="crispEdges" fill="currentColor"><rect x="3" y="2" width="4" height="12"/><rect x="9" y="2" width="4" height="12"/></svg>',
     play: '<svg viewBox="0 0 16 16" shape-rendering="crispEdges" fill="currentColor"><path d="M4 2h2v12H4zM6 4h2v8H6zM8 5h2v6H8zM10 7h2v2h-2z"/></svg>',

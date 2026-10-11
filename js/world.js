@@ -42,7 +42,7 @@
   }
   function finalize(map) {
     map.obst = map.props.filter((o) => o.solid);
-    map.torches = map.props.filter((o) => o.k === 'torch');
+    map.torches = map.props.filter((o) => o.k === 'torch' || o.k === 'campfire');
   }
 
   function buildVillage() {
@@ -103,10 +103,26 @@
     place(55, 70, (x, y) => ({ k: 'tree', x, y, sz: 0.85 + r() * 0.45, kind: r() < 0.5 ? 'pine' : 'oak', fruit: r() < 0.2, r: 15, solid: true }));
     place(30, 70, (x, y) => ({ k: 'rock', x, y, r: 14 + r() * 14, solid: true }));
     place(70, 10, (x, y) => ({ k: 'bush', x, y, sz: 0.8 + r() * 0.5, berries: r() < 0.25 }));
+    // приметы зон: гнёзда у птиц, лагеря гуманоидов, кристаллы у элементалей
+    const zoneSpot = (cat, tries = 200) => { for (let i = 0; i < tries; i++) { const x = 80 + r() * (map.W - 160), y = 90 + r() * (map.H - 160); if (ZP.catForBase(W.baseLevel(map, x, y)) === cat && !nearGate(x, y, 260) && !solids.some((o) => Math.hypot(x - o.x, y - o.y) < 60 + o.r)) return { x, y }; } return null; };
+    for (let i = 0; i < 10; i++) { const s = zoneSpot('bird'); if (s) P.push({ k: 'nest', x: s.x, y: s.y }); }
+    for (let i = 0; i < 4; i++) {
+      const s = zoneSpot('humanoid'); if (!s) continue;
+      const fire = { k: 'campfire', x: s.x, y: s.y + 30 }, t1 = { k: 'tent', x: s.x - 40, y: s.y, r: 26, solid: true }, t2 = { k: 'tent', x: s.x + 44, y: s.y - 10, r: 26, solid: true };
+      P.push(fire, t1, t2); solids.push(t1, t2);
+    }
+    for (let i = 0; i < 16; i++) { const s = zoneSpot('elemental'); if (s) { const o = { k: 'crystal', x: s.x, y: s.y, r: 14, solid: true, hue: r() < 0.5 ? 'p' : 'b' }; P.push(o); solids.push(o); } }
     addBorderForest(P, map, 777);
     finalize(map);
     return map;
   }
+
+  // «базовый уровень» точки: 1 у ворот, ~10 в дальнем углу лугов
+  W.baseLevel = (map, x, y) => {
+    let dmin = 1e9;
+    for (const g of Object.values(map.gates)) dmin = Math.min(dmin, Math.hypot(x - g.x, y - g.y));
+    return 1 + (dmin / (Math.hypot(map.W, map.H) * 0.8)) * 9;
+  };
 
   W.init = () => {
     W.maps.village = buildVillage();

@@ -8,6 +8,8 @@
   const lb = document.createElement('canvas'), lctx = lb.getContext('2d');
   let dpr = 1, s = 1, P = 2, g = 1, cw = 0, ch = 0, viewCX = 0, viewCY = 0, vcxB = 0, vcyB = 0, topEdge = 0, botEdge = 0;
 
+  R.unit = ZP.SPRITE_PX; R.g = 1;
+  R.snap = (v) => Math.round(v / R.g) * R.g;
   R.layout = () => {
     dpr = Math.min(3, window.devicePixelRatio || 1);
     cw = game.clientWidth; ch = game.clientHeight;
@@ -21,6 +23,9 @@
     s = U.clamp(Math.min(cw, usableH * 1.5) / 560, 0.6, 1.6);
     viewCX = cw / 2; viewCY = topH + 4 + usableH / 2;
     P = Math.max(2, Math.round(2 * dpr)); g = P / (s * dpr);
+    // пиксель спрайта = целое число пикселей экрана (около 3 пикселей мира)
+    R.unit = g * Math.max(1, Math.round(ZP.SPRITE_PX / g));
+    R.g = g;
     lb.width = Math.ceil(cv.width / P); lb.height = Math.ceil(cv.height / P);
     vcxB = (viewCX * dpr) / P; vcyB = (viewCY * dpr) / P;
     R.snapCamera();
@@ -53,7 +58,7 @@
     const w = ZP.WEAPONS[H.weapon], t = H.target;
     if (t && !t.dead && map.id === 'field') {
       c.strokeStyle = 'rgba(255,90,70,.9)'; c.lineWidth = 2; c.setLineDash([5, 4]);
-      c.beginPath(); c.ellipse(t.x, t.y + 2, t.r + 8, (t.r + 8) * 0.4, 0, 0, 7); c.stroke(); c.setLineDash([]);
+      c.beginPath(); c.ellipse(t.x, t.y + 1, t.r + 7, (t.r + 7) * 0.4, 0, 0, 7); c.stroke(); c.setLineDash([]);
       if (w.type !== 'melee') { c.strokeStyle = 'rgba(255,215,120,.18)'; c.setLineDash([6, 8]); c.beginPath(); c.arc(H.x, H.y, w.range[1], 0, 7); c.stroke(); c.setLineDash([]); }
     }
     for (const p of ZP.fx.particles) if (p.ghost) { c.globalAlpha = p.life * 2; c.fillStyle = p.c; c.beginPath(); c.ellipse(p.x, p.y - 30, 9, 22, 0, 0, 7); c.fill(); }
@@ -63,11 +68,13 @@
     const ents = [];
     for (const o of map.props) if (inView(o.x, o.y, 140)) ents.push({ y: o.k === 'gateBar' ? o.y : o.y + (o.r ? o.r * 0.45 : 0), o });
     if (map.id === 'field') for (const e of ZP.enemies.list) if (inView(e.x, e.y, 60)) ents.push({ y: e.y, e });
-    ents.push({ y: H.y + 12, h: true });
+    for (const l of ZP.inventory.loot) if (l.map === map.id) ents.push({ y: l.y, l });
+    ents.push({ y: H.y + 2, h: true });
     ents.sort((a, b) => a.y - b.y);
     for (const it of ents) {
       if (it.o) ZP.sprites.drawProp(c, it.o, clock);
-      else if (it.e) ZP.sprites.drawAnimal(c, it.e, clock);
+      else if (it.e) ZP.sprites.drawEnemy(c, it.e, clock);
+      else if (it.l) ZP.inventory.drawLoot(c, it.l);
       else ZP.sprites.drawHero(c, H, clock);
     }
     c.save(); c.globalCompositeOperation = 'lighter';
@@ -111,7 +118,7 @@
       vctx.fillStyle = color; vctx.fillRect(Math.round(sx - W / 2), Math.round(sy), Math.round(W * U.clamp(frac, 0, 1)), Math.round(Hh));
     };
     for (const gt of Object.values(map.gates)) if (inView(gt.x, gt.y, 80)) label('Выход: ' + gt.label,gt.x + gt.nx * 6 + (gt.side === 'e' ? -40 : gt.side === 'w' ? 44 : 0), gt.y + (gt.side === 's' ? -48 : gt.side === 'n' ? 70 : -60), 11, '#ffd36a', 700);
-    if (map.id === 'village') { const d = ZP.world.dummy(); if (d) label('Манекен', d.x, d.y - 58, 10, '#f0d78a', 600); label('Камень воскрешения', map.respawn.x, map.respawn.y - 80, 10, '#a8dcff', 600); }
+    if (map.id === 'village') { const d = ZP.world.dummy(); if (d) label('Манекен', d.x, d.y - 54, 10, '#f0d78a', 600); label('Камень воскрешения', map.respawn.x, map.respawn.y - 76, 10, '#a8dcff', 600); }
     if (map.id === 'field') {
       for (const e of ZP.enemies.list) {
         if (e.dead || !inView(e.x, e.y, 40)) continue;
@@ -120,7 +127,7 @@
         label(`${e.name} ${e.L}`, e.x, e.y - e.h - 12, isT ? 11 : 10, ZP.levelColor(e.L), isT ? 700 : 600);
       }
     }
-    if (!H.dead) { label(ZP.HERO_NAME, H.x, H.y - 96, 13, ZP.fx.COL.name, 700); if (map.id === 'field' || H.hp < H.max) bar(H.x, H.y - 92, 34, H.hp / H.max, '#4ad66a'); }
+    if (!H.dead) { label(ZP.HERO_NAME, H.x, H.y - 66, 12, ZP.fx.COL.name, 700); if (map.id === 'field' || H.hp < H.max) bar(H.x, H.y - 62, 30, H.hp / H.max, '#4ad66a'); }
     for (const f of ZP.fx.floats) { vctx.globalAlpha = Math.min(1, f.life * 1.5); label(f.text, f.x, f.y, f.big ? 15 : 13, f.c, 700); }
     vctx.globalAlpha = 1;
   };

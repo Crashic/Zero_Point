@@ -41,7 +41,7 @@
     if (M.earned(k) > before) {
       const H = ZP.hero;
       ZP.fx.ring(H.x, H.y);
-      ZP.fx.float(H.x, H.y - 118, 'Новое очко навыка!', ZP.fx.COL.accent, true);
+      ZP.fx.float(H.x, H.y - ZP.HERO_FX, 'Новое очко навыка!', ZP.fx.COL.accent, true);
       ZP.ui.log(`${ZP.WEAPONS[k].name}: владение ${U.pctTxt(s.m)}. Получено очко навыка, свободно: ${M.freePts(k)}.`, 'gold');
       ZP.ui.skillsChanged();
     }

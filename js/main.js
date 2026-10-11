@@ -10,6 +10,7 @@
     ZP.enemies.init();
     ZP.ui.init();
     ZP.uiSkills.init();
+    ZP.uiBag.init();
     ZP.uiMenu.init();
     ZP.pwa.init();
     ZP.render.layout();
@@ -23,13 +24,14 @@
 
     // клавиатура
     window.addEventListener('keydown', (e) => {
-      if (e.key === 'Escape') { ['win-skills', 'win-char', 'win-menu'].forEach((w) => ZP.ui.close(w)); return; }
+      if (e.key === 'Escape') { ['win-skills', 'win-char', 'win-menu', 'win-bag'].forEach((w) => ZP.ui.close(w)); return; }
       if (e.target.closest && e.target.closest('button,.node,[role="button"]') && (e.key === ' ' || e.key === 'Enter')) return;
       const i = ['1', '2', '3', '4'].indexOf(e.key);
       if (i >= 0) { ZP.heroAI.selectWeapon(ZP.ORDER[i]); ZP.ui.dirty(); }
       const key = e.key.toLowerCase();
       if (key === 'k' || key === 'л') ZP.ui.toggle('win-skills');
       if (key === 'c' || key === 'с') ZP.ui.toggle('win-char');
+      if (key === 'i' || key === 'ш' || key === 'b' || key === 'и') ZP.ui.toggle('win-bag');
       if (e.key === ' ') { e.preventDefault(); ZP.uiMenu.setPause(!ZP.paused); }
     });
 
@@ -53,6 +55,7 @@
     ZP.heroAI.update(dt);
     ZP.enemies.update(dt);
     ZP.combat.update(dt);
+    ZP.inventory.update(dt);
     ZP.fx.update(dt);
     const d = ZP.world.dummy(); if (d && d.shake > 0) d.shake = Math.max(0, d.shake - dt);
   }

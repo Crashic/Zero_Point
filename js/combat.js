@@ -53,6 +53,7 @@
     const got = ZP.mastery.gain(k, e.L);
     ZP.fx.float(e.x, e.y - e.h - 28, got ? '+' + U.pctTxt(got) + ' владения' : 'Повержен', COL().xp, true);
     ZP.ui.log(`${ZP.HERO_NAME} побеждает: ${e.name}, ур. ${e.L}.` + (got ? ` ${ZP.WEAPONS[k].name}: +${U.pctTxt(got)} за победу.` : ''), 'gold');
+    ZP.inventory.onKill(e);
     const H = ZP.hero;
     if (H.target === e) H.target = null;
     if (H.attacker === e) H.attacker = null;
@@ -65,7 +66,7 @@
     const H = ZP.hero;
     if (H.dead || H.map !== 'field') return;
     e.atkAnim = 0.3;
-    const head = H.y - 92;
+    const head = H.y - ZP.HERO_FX + 12;
     if (Math.random() > ZP.stats.enemyHitChance) { ZP.fx.float(H.x + U.rnd(-6, 6), head, 'Мимо', COL().muted); return; }
     if (Math.random() < ZP.stats.dodgeChance(ZP.PLAYER_BASE)) { ZP.fx.float(H.x + U.rnd(-6, 6), head, 'Уворот', COL().name); return; }
     const dmg = ZP.stats.rollDamage(ZP.stats.enemyRaw(e.st), ZP.PLAYER_BASE);

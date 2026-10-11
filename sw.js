@@ -1,11 +1,11 @@
 // Сервис-воркер: игра работает без интернета, а при наличии сети сразу получает обновления.
-const VERSION = 'zp-v0.8';
+const VERSION = 'zp-v0.9';
 const SHELL = [
   './', 'index.html', 'manifest.webmanifest', 'css/style.css',
-  'js/config.js', 'js/skills-data.js', 'js/save.js', 'js/stats.js', 'js/mastery.js', 'js/fx.js',
-  'sprites/props.js', 'sprites/hero.js', 'sprites/animals.js',
-  'js/world.js', 'js/ground.js', 'js/enemies.js', 'js/combat.js', 'js/hero-ai.js', 'js/render.js',
-  'js/ui-hud.js', 'js/ui-skills.js', 'js/ui-character.js', 'js/ui-menu.js', 'js/pwa.js', 'js/main.js',
+  'js/config.js', 'js/skills-data.js', 'js/items-data.js', 'js/save.js', 'js/stats.js', 'js/mastery.js', 'js/fx.js',
+  'sprites/base.js', 'sprites/items.js', 'sprites/props.js', 'sprites/hero.js', 'sprites/enemies.js',
+  'js/world.js', 'js/ground.js', 'js/enemies.js', 'js/combat.js', 'js/inventory.js', 'js/hero-ai.js', 'js/render.js',
+  'js/ui-hud.js', 'js/ui-skills.js', 'js/ui-character.js', 'js/ui-bag.js', 'js/ui-menu.js', 'js/pwa.js', 'js/main.js',
   'sprites/icons/icon-192.png', 'sprites/icons/icon-512.png', 'sprites/icons/icon-maskable-512.png',
 ];
 

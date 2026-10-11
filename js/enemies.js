@@ -1,16 +1,8 @@
-// Звери на Звериных лугах: появление в случайных местах, уровни 1–10, агро 100 px, погоня, атака, возврат домой.
+// Враги на Звериных лугах: четыре типа по зонам, уровни 1–10, агро 100 px, погоня, атака, возврат домой.
 (function (ZP) {
   const U = ZP.util;
   const E = (ZP.enemies = { list: [], queue: [] });
   let nextId = 1;
-
-  // уровень зависит от дальности от ворот: у входа слабые, в глубине сильные
-  function levelAt(map, x, y) {
-    let dmin = 1e9;
-    for (const g of Object.values(map.gates)) dmin = Math.min(dmin, Math.hypot(x - g.x, y - g.y));
-    const far = Math.hypot(map.W, map.H) * 0.8;
-    return U.clamp(Math.round(1 + (dmin / far) * 9 + U.rnd(-1.2, 1.2)), 1, 10);
-  }
 
   E.spawnOne = () => {
     const map = ZP.world.maps.field, H = ZP.hero;
@@ -20,11 +12,12 @@
       if (H.map === 'field' && Math.hypot(x - H.x, y - H.y) < 380) continue;
       if (!map.obst.every((o) => Math.hypot(x - o.x, y - o.y) > o.r + 30)) continue;
       if (E.list.some((e) => !e.dead && Math.hypot(x - e.x, y - e.y) < 60)) continue;
-      const L = levelAt(map, x, y), type = ZP.typeForLevel(L), st = ZP.makeEnemyStats(type, L), sz = ZP.sprites.animalSize(type);
+      const base = ZP.world.baseLevel(map, x, y), cat = ZP.catForBase(base), cr = ZP.CATS[cat].lv;
+      const L = U.clamp(Math.round(base + U.rnd(-0.8, 0.8)), cr[0], cr[1]), type = ZP.typeFor(cat, L), st = ZP.makeEnemyStats(type, L), sz = ZP.sprites.enemySize(type);
       const e = {
-        id: nextId++, type, L, name: ZP.ANIMALS[type].name, st, hp: st.hp,
+        id: nextId++, type, L, cat, name: ZP.ENEMY_TYPES[type].name, st, hp: st.hp,
         x, y, home: { x, y }, r: sz.r, h: sz.h, face: Math.random() < 0.5 ? -1 : 1,
-        speed: ZP.ANIMALS[type].speed, state: 'idle', t: U.rnd(0.5, 3), goal: null,
+        speed: ZP.ENEMY_TYPES[type].speed, fly: sz.fly, state: 'idle', t: U.rnd(0.5, 3), goal: null,
         aggro: false, returning: false, cd: U.rnd(0.3, 1), atkAnim: 0, hitFlash: 0, shake: 0,
         walk: 0, moving: false, dead: false, deadT: 0,
       };

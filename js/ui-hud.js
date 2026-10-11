@@ -22,12 +22,13 @@
   UI.skillsChanged = () => { UI.dirty(); if (ZP.uiSkills && !$('win-skills').hidden) ZP.uiSkills.render(); };
 
   // окна
-  const wins = ['win-skills', 'win-char', 'win-menu'];
+  const wins = ['win-skills', 'win-char', 'win-menu', 'win-bag'];
   UI.open = (id) => {
     for (const w of wins) if (w !== id) $(w).hidden = true;
     if (id === 'win-skills') ZP.uiSkills.open();
     if (id === 'win-char') ZP.uiChar.render();
     if (id === 'win-menu') ZP.uiMenu.render();
+    if (id === 'win-bag') ZP.uiBag.open();
     $(id).hidden = false;
     const c = $(id).querySelector('.close'); if (c) c.focus({ preventScroll: true });
   };
@@ -45,16 +46,20 @@
     const ab = $('actionbar');
     ab.innerHTML = ZP.ORDER.map((k, i) => `<button class="slot" type="button" id="s-${k}" data-k="${k}" aria-pressed="false" aria-label="${ZP.WEAPONS[k].name}">${ZP.ICONS[k]}<i class="cd"></i><span class="key ol">${i + 1}</span><span class="pct ol"></span><span class="badge" hidden></span></button>`).join('') +
       `<span class="sep"></span><button class="slot util" type="button" id="s-skills" aria-label="Паутина навыков">${ZP.ICONS.web}<span class="pct ol">Навыки</span><span class="badge" hidden></span></button>` +
-      `<button class="slot util" type="button" id="s-char" aria-label="Персонаж">${ZP.ICONS.person}<span class="pct ol">Герой</span></button>`;
+      `<button class="slot util" type="button" id="s-char" aria-label="Персонаж">${ZP.ICONS.person}<span class="pct ol">Герой</span></button>` +
+      `<button class="slot util" type="button" id="s-bag" aria-label="Сумка">${ZP.ICONS.bag}<span class="pct ol">Сумка</span><span class="badge" hidden></span></button>`;
     ab.addEventListener('click', (e) => {
       const b = e.target.closest('.slot'); if (!b) return;
       if (b.id === 's-skills') UI.open('win-skills');
       else if (b.id === 's-char') UI.open('win-char');
+      else if (b.id === 's-bag') UI.open('win-bag');
       else { ZP.heroAI.selectWeapon(b.dataset.k); UI.dirty(); }
     });
     $('unit').addEventListener('click', () => UI.open('win-char'));
     $('unit').addEventListener('keydown', (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); e.stopPropagation(); UI.open('win-char'); } });
     $('log').addEventListener('click', () => $('log').classList.toggle('open'));
+    $('coin-ico').src = ZP.pix.coinUrl();
+    $('coins-pill').addEventListener('click', () => UI.open('win-bag'));
     UI.mapChanged();
   };
 
@@ -92,6 +97,10 @@
       const b = el.querySelector('.badge'); b.hidden = fp <= 0; b.textContent = fp;
     }
     const tot = ZP.mastery.totalFree(), sb = $('s-skills').querySelector('.badge'); sb.hidden = tot <= 0; sb.textContent = tot;
+    // коины и новые предметы
+    $('hud-coins').textContent = ZP.save.data.coins;
+    const nb = ZP.inventory.fresh.size, bb = $('s-bag').querySelector('.badge'); bb.hidden = nb <= 0; bb.textContent = nb;
+    if (!$('win-bag').hidden) ZP.uiBag.render();
     // баннер
     const bn = $('banner');
     if (H.dead) { bn.hidden = false; bn.className = 'banner ol dead'; $('banner-title').textContent = `${ZP.HERO_NAME} погибла`; $('banner-sub').textContent = `Воскрешение в деревне через ${Math.max(1, Math.ceil(ZP.RESPAWN_TIME - H.deathT))}…`; }

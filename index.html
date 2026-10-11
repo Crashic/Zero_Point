@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no">
 <title>Zero Point</title>
-<meta name="description" content="Пиксельная RPG: героиня Аэлис охотится на зверей и прокачивает владение оружием.">
+<meta name="description" content="Пиксельная RPG: героиня Аэлис охотится на зверей, птиц, гуманоидов и элементалей и прокачивает владение оружием.">
 <meta name="theme-color" content="#1a1008">
 <meta name="mobile-web-app-capable" content="yes">
 <link rel="manifest" href="manifest.webmanifest">
@@ -36,6 +36,7 @@
     </div>
     <div class="hud-tr">
       <div class="frame mini"><canvas id="minimap" width="64" height="43"></canvas><div class="mini-label ol" id="map-label">Деревня</div></div>
+      <button class="frame coins-pill ol" id="coins-pill" type="button" aria-label="Коины — открыть сумку"><img id="coin-ico" alt=""><span id="hud-coins">0</span></button>
       <div class="btn-row">
         <button class="ibtn" id="pause" type="button" aria-label="Пауза"></button>
         <button class="ibtn ol" id="speed" type="button" aria-label="Скорость игры">×1</button>
@@ -92,6 +93,22 @@
     </div>
   </div>
 
+  <!-- Окно: сумка -->
+  <div class="layer" id="win-bag" hidden>
+    <div class="frame window bagwin" role="dialog" aria-labelledby="wb-title">
+      <div class="win-head"><span class="spacer"></span><h2 class="ol" id="wb-title">Сумка</h2><button class="ibtn close" type="button" aria-label="Закрыть"></button></div>
+      <div class="win-body">
+        <div class="inset bag-top">
+          <div class="bag-coins"><img id="bag-coin-ico" alt=""><b class="ol" id="bag-coins">0</b><span>коинов</span></div>
+          <span class="hint" id="bag-summary"></span>
+          <button class="gbtn" type="button" id="sell-all" data-armed="false">Продать всё</button>
+        </div>
+        <div class="bag-grid" id="bag-grid"></div>
+        <div class="inset item-card" id="item-card"></div>
+      </div>
+    </div>
+  </div>
+
   <!-- Окно: меню -->
   <div class="layer" id="win-menu" hidden>
     <div class="frame window small" role="dialog" aria-labelledby="wm-title">
@@ -121,25 +138,30 @@
 <!-- Данные и правила -->
 <script src="js/config.js"></script>
 <script src="js/skills-data.js"></script>
+<script src="js/items-data.js"></script>
 <script src="js/save.js"></script>
 <script src="js/stats.js"></script>
 <script src="js/mastery.js"></script>
 <script src="js/fx.js"></script>
 <!-- Спрайты -->
+<script src="sprites/base.js"></script>
+<script src="sprites/items.js"></script>
 <script src="sprites/props.js"></script>
 <script src="sprites/hero.js"></script>
-<script src="sprites/animals.js"></script>
+<script src="sprites/enemies.js"></script>
 <!-- Мир и персонажи -->
 <script src="js/world.js"></script>
 <script src="js/ground.js"></script>
 <script src="js/enemies.js"></script>
 <script src="js/combat.js"></script>
+<script src="js/inventory.js"></script>
 <script src="js/hero-ai.js"></script>
 <script src="js/render.js"></script>
 <!-- Интерфейс -->
 <script src="js/ui-hud.js"></script>
 <script src="js/ui-skills.js"></script>
 <script src="js/ui-character.js"></script>
+<script src="js/ui-bag.js"></script>
 <script src="js/ui-menu.js"></script>
 <script src="js/pwa.js"></script>
 <script src="js/main.js"></script>

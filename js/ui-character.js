@@ -39,7 +39,7 @@
       </div>`;
     }).join('');
 
-    const byType = Object.keys(ZP.ANIMALS).map((t) => `${ZP.ANIMALS[t].name}: ${s.killsByType[t] || 0}`).join(' · ');
-    $('char-record').innerHTML = row('Побеждено зверей', s.kills, byType) + row('Самый сильный побеждённый', s.bestLevel ? 'ур. ' + s.bestLevel : '—', '') + row('Гибелей', s.deaths, '');
+    const byCat = ZP.CAT_ORDER.map((cat) => `${ZP.CATS[cat].name}: ${Object.keys(ZP.ENEMY_TYPES).filter((t) => ZP.ENEMY_TYPES[t].cat === cat).reduce((a, t) => a + (s.killsByType[t] || 0), 0)}`).join(' · ');
+    $('char-record').innerHTML = row('Побеждено врагов', s.kills, byCat) + row('Коины', s.coins, `Всего заработано: ${s.coinsEarned || 0}`) + row('Самый сильный побеждённый', s.bestLevel ? 'ур. ' + s.bestLevel : '—', '') + row('Гибелей', s.deaths, '');
   };
 })(window.ZP);

@@ -14,6 +14,9 @@
     deaths: 0,
     killsByType: {},
     bestLevel: 0,
+    inventory: {},
+    coins: 0,
+    coinsEarned: 0,
     savedAt: 0,
   });
 
@@ -51,6 +54,9 @@
         d.bestLevel = raw.bestLevel | 0;
         d.killsByType = typeof raw.killsByType === 'object' && raw.killsByType ? raw.killsByType : {};
         d.savedAt = raw.savedAt || 0;
+        if (raw.inventory && typeof raw.inventory === 'object') for (const [id, n] of Object.entries(raw.inventory)) if (ZP.ITEMS[id] && n > 0) d.inventory[id] = n | 0;
+        d.coins = Math.max(0, raw.coins | 0);
+        d.coinsEarned = Math.max(0, raw.coinsEarned | 0);
       }
       this.data = d;
       return d;
