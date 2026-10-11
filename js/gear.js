@@ -1,4 +1,5 @@
 // Снаряжение героини: что надето, итоговые характеристики, надеть/снять/продать, выпадение с врагов и очередь показа.
+// Лук и посох — двуручные (занимают обе руки). Меч и кинжал носятся только парой одного вида.
 // Оружие в руках действует, только если совпадает с оружием, которое героиня держит сейчас (панель оружия).
 (function (ZP) {
   const U = ZP.util;
@@ -41,8 +42,9 @@
   G.displaced = (g, hand) => {
     const e = D().equip, slot = G.slotFor(g, hand), out = [];
     if (e[slot]) out.push(e[slot]);
-    if (slot === 'right' && g.twoHand && e.left) out.push(e.left);
-    if (slot === 'left' && e.right && ZP.gearDef(e.right).twoHand) out.push(e.right);
+    // вторая рука: двуручное освобождает её; одноручное — только в паре с таким же оружием (меч + меч, кинжал + кинжал)
+    if (slot === 'right' && e.left && (g.twoHand || ZP.gearDef(e.left).weapon !== g.weapon)) out.push(e.left);
+    if (slot === 'left' && e.right) { const r = ZP.gearDef(e.right); if (r.twoHand || r.weapon !== g.weapon) out.push(e.right); }
     return out;
   };
   // разница характеристик: новый предмет против того, что снимется

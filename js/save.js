@@ -69,8 +69,9 @@
           const ok = g.slot === 'hand' ? (slot === 'right' || (slot === 'left' && !g.twoHand)) : g.slot === slot;
           if (ok) d.equip[slot] = id;
         }
-        if (d.equip.left && d.equip.right && ZP.gearDef(d.equip.right).twoHand) delete d.equip.left;
         if (Array.isArray(raw.gear)) d.gear = raw.gear.filter((id) => ZP.gearDef(id));
+        // двуручное в правой или разные виды оружия в руках — левое в сумку
+        if (d.equip.left && d.equip.right) { const r = ZP.gearDef(d.equip.right); if (r.twoHand || r.weapon !== ZP.gearDef(d.equip.left).weapon) { d.gear.push(d.equip.left); delete d.equip.left; } }
         // невыбранные при закрытии игры предметы — в сумку
         if (Array.isArray(raw.gearQueue)) d.gear.push(...raw.gearQueue.filter((id) => ZP.gearDef(id)));
         const rs = raw.settings || {};

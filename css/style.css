@@ -355,3 +355,4 @@ input[type=range]{width:100%;accent-color:var(--gold);height:28px}
 .gslot{box-shadow:inset 0 0 0 1px var(--rc)}
 .icard-head + .gstats + .hint, .gstats + .hint{margin-bottom:6px}
 .doll-card .sell-row, .inset > .sell-row{margin-top:8px}
+.dslot.both img{opacity:.45}

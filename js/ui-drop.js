@@ -12,7 +12,7 @@
     const Q = ZP.QUALITY[g.q];
     return `<div class="icard-head"><img src="${Dr.icon(g)}" alt="" style="border-color:${Q.color}"><div><h3 class="ol" style="color:${Q.color}">${g.name}</h3><div class="hint">${Q.name} · ${g.typeName.toLowerCase()}${g.twoHand ? ' · двуручное' : ''} · ур. предмета ${g.t}</div></div></div>
       <div class="gstats">${ZP.STAT_ORDER.filter((k) => g.stats[k]).map((k) => `<div class="mline"><span>${ZP.STAT_NAMES[k]}</span><span>+${g.stats[k]}</span></div>`).join('')}</div>
-      ${g.weapon ? `<p class="hint">Действует, когда в руках ${ZP.WEAPONS[g.weapon].acc4}.${g.twoHand ? ' Занимает обе руки.' : ''}</p>` : ''}
+      ${g.weapon ? `<p class="hint">Действует, когда в руках ${ZP.WEAPONS[g.weapon].acc4}. ${g.twoHand ? 'Двуручное — занимает обе руки.' : `Во второй руке — только ${ZP.WEAPONS[g.weapon].name.toLowerCase()}.`}</p>` : ''}
       <div class="mline"><span>Цена</span><span>${g.price} коин.</span></div>`;
   };
   // таблица сравнения с тем, что придётся снять

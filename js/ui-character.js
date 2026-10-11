@@ -6,11 +6,14 @@
   const DOLL_L = ['helm', 'shoulders', 'chest', 'bracers', 'gloves', 'left'], DOLL_R = ['belt', 'pants', 'greaves', 'boots', 'right'];
 
   // кукла: слоты вокруг портрета; нажатие — карточка надетого и подходящие вещи из сумки
+  // двуручное оружие из правой руки показывается и в левой (занимает обе)
+  const twoHandR = () => { const r = ZP.gear.at('right'); return r && r.twoHand ? r : null; };
   const slotBtn = (slot) => {
-    const g = ZP.gear.at(slot), Q = g && ZP.QUALITY[g.q], off = g && !ZP.gear.works(g);
-    return `<button class="dslot${C.sel === slot ? ' on' : ''}${off ? ' off' : ''}" type="button" data-slot="${slot}" aria-label="${ZP.SLOT_NAMES[slot]}${g ? ': ' + g.name : ''}" ${g ? `style="--rc:${Q.color}"` : ''}>${g ? `<img src="${ZP.uiDrop.icon(g)}" alt="">` : `<span>${ZP.SLOT_NAMES[slot]}</span>`}</button>`;
+    const both = slot === 'left' && twoHandR(), g = both || ZP.gear.at(slot), Q = g && ZP.QUALITY[g.q], off = g && !ZP.gear.works(g);
+    const key = both ? 'right' : slot;
+    return `<button class="dslot${C.sel === key ? ' on' : ''}${off ? ' off' : ''}${both ? ' both' : ''}" type="button" data-slot="${key}" aria-label="${ZP.SLOT_NAMES[slot]}${g ? ': ' + g.name : ''}" ${g ? `style="--rc:${Q.color}"` : ''}>${g ? `<img src="${ZP.uiDrop.icon(g)}" alt="">` : `<span>${ZP.SLOT_NAMES[slot]}</span>`}</button>`;
   };
-  const fits = (slot, g) => (slot === 'left' ? g.slot === 'hand' && !g.twoHand : slot === 'right' ? g.slot === 'hand' : g.slot === slot);
+  const fits = (slot, g) => (slot === 'left' ? g.slot === 'hand' && !g.twoHand && (!ZP.gear.at('right') || ZP.gear.at('right').twoHand || ZP.gear.at('right').weapon === g.weapon) : slot === 'right' ? g.slot === 'hand' : g.slot === slot);
   function renderDoll() {
     const d = ZP.save.data, sig = JSON.stringify([d.equip, d.gear.length, C.sel, ZP.hero.weapon]);
     if (sig === C.sig) return;
@@ -20,10 +23,10 @@
       <div class="dmid"><canvas id="doll-portrait" width="32" height="32"></canvas><div class="dbonus">${bl || '<span>Снаряжение не надето</span>'}</div></div>
       <div class="dcol">${DOLL_R.map(slotBtn).join('')}</div>`;
     const card = $('doll-card');
-    if (!C.sel) { card.innerHTML = '<p class="hint">Нажмите на слот, чтобы посмотреть предмет или надеть вещь из сумки. Оружие действует, только когда героиня держит такое же оружие.</p>'; return; }
+    if (!C.sel) { card.innerHTML = '<p class="hint">Нажмите на слот, чтобы посмотреть предмет или надеть вещь из сумки. Лук и посох занимают обе руки. Мечи и кинжалы носятся только парой одного вида. Оружие действует, только когда героиня держит такое же оружие.</p>'; return; }
     const g = ZP.gear.at(C.sel);
     const list = d.gear.map((id, i) => [ZP.gearDef(id), i]).filter(([x]) => fits(C.sel, x)).sort((a, z) => z[0].q - a[0].q || z[0].t - a[0].t).slice(0, 12);
-    card.innerHTML = `<h4>${ZP.SLOT_NAMES[C.sel]}</h4>` +
+    card.innerHTML = `<h4>${g && g.twoHand ? 'Обе руки' : ZP.SLOT_NAMES[C.sel]}</h4>` +
       (g ? `<div class="inset">${ZP.uiDrop.card(g)}${ZP.gear.works(g) ? '' : `<p class="hint warn">Сейчас не действует: в руках ${ZP.WEAPONS[ZP.hero.weapon].acc4}.</p>`}<div class="sell-row"><button class="gbtn" type="button" data-act="off">Снять</button></div></div>` : '<p class="hint">Слот пуст.</p>') +
       (list.length ? `<div class="fit-list"><b class="cmp-t">Из сумки</b>${list.map(([x, i]) => `<div class="fit-row"><img src="${ZP.uiDrop.icon(x)}" alt=""><span><i style="color:${ZP.QUALITY[x.q].color}">${x.name}</i><small>${ZP.STAT_ORDER.filter((k) => x.stats[k]).map((k) => ZP.STAT_NAMES[k] + ' +' + x.stats[k]).join(', ')}</small></span><button class="tbtn" type="button" data-wear="${i}">Надеть</button></div>`).join('')}</div>` : '<p class="hint">В сумке нет подходящих вещей.</p>');
   }
