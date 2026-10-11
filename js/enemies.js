@@ -18,7 +18,7 @@
         id: nextId++, type, L, cat, name: ZP.ENEMY_TYPES[type].name, st, hp: st.hp,
         x, y, home: { x, y }, r: sz.r, h: sz.h, face: Math.random() < 0.5 ? -1 : 1,
         speed: ZP.ENEMY_TYPES[type].speed, fly: sz.fly, state: 'idle', t: U.rnd(0.5, 3), goal: null,
-        aggro: false, returning: false, chaseT: 0, cd: U.rnd(0.3, 1), atkAnim: 0, hitFlash: 0, shake: 0,
+        aggro: false, hunt: false, returning: false, chaseT: 0, cd: U.rnd(0.3, 1), atkAnim: 0, hitFlash: 0, shake: 0,
         walk: 0, moving: false, dead: false, deadT: 0,
       };
       E.list.push(e);
@@ -29,7 +29,7 @@
 
   E.init = () => { E.list.length = 0; E.queue.length = 0; for (let i = 0; i < ZP.ENEMY_COUNT; i++) E.spawnOne(); };
   E.scheduleRespawn = () => E.queue.push(U.rnd(ZP.ENEMY_RESPAWN[0], ZP.ENEMY_RESPAWN[1]));
-  E.calmAll = () => { for (const e of E.list) if (e.aggro) { e.aggro = false; e.returning = true; e.chaseT = 0; } };
+  E.calmAll = () => { for (const e of E.list) if (e.aggro) { e.aggro = false; e.hunt = false; e.returning = true; e.chaseT = 0; } };
 
   function moveTo(e, gx, gy, sp, dt) {
     const d = Math.hypot(gx - e.x, gy - e.y);
@@ -54,10 +54,10 @@
       e.moving = false; e.cd -= dt;
       const dh = heroHere ? Math.hypot(e.x - H.x, e.y - H.y) : 1e9;
       // агро: героиня ближе 100 px — враг замечает её и держит 2 с после ухода из радиуса;
-      // удар героини даёт 15 с преследования (обновляется при каждом ударе)
+      // после удара героини враг преследует её без ограничений — пока она не погибнет или не уйдёт с локации
       if (!e.returning && dh < ZP.AGGRO + H.r) { e.aggro = true; e.chaseT = Math.max(e.chaseT, 2); }
       e.chaseT -= dt;
-      if (e.aggro && (!heroHere || e.chaseT <= 0 || Math.hypot(e.x - e.home.x, e.y - e.home.y) > ZP.CHASE_DIST)) { e.aggro = false; e.returning = true; e.chaseT = 0; }
+      if (e.aggro && (!heroHere || (!e.hunt && (e.chaseT <= 0 || Math.hypot(e.x - e.home.x, e.y - e.home.y) > ZP.CHASE_DIST)))) { e.aggro = false; e.hunt = false; e.returning = true; e.chaseT = 0; }
       const sp = e.speed;
       if (e.returning) {
         e.hp = Math.min(e.st.hp, e.hp + e.st.hp * 0.5 * dt);
