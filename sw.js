@@ -1,5 +1,5 @@
 // Сервис-воркер: игра работает без интернета, а при наличии сети сразу получает обновления.
-const VERSION = 'zp-v0.2.4';
+const VERSION = 'zp-v0.2.5';
 const SHELL = [
   './', 'index.html', 'manifest.webmanifest', 'css/style.css',
   'js/config.js', 'js/changelog.js', 'js/skills-data.js', 'js/items-data.js', 'js/potions-data.js', 'js/save.js', 'js/stats.js', 'js/mastery.js', 'js/fx.js',

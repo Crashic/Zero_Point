@@ -62,6 +62,7 @@
     $('log').addEventListener('click', () => $('log').classList.toggle('open'));
     $('coin-ico').src = ZP.pix.coinUrl();
     $('coins-pill').addEventListener('click', () => UI.open('win-bag'));
+    $('potion-box').addEventListener('click', () => { const id = ZP.potions.next(); if (id && ZP.hero.hp < ZP.hero.max && !ZP.hero.dead) ZP.potions.drink(id, false); else UI.open('win-bag'); UI.render(); });
     $('switch-target').addEventListener('click', (e) => { e.stopPropagation(); ZP.heroAI.switchTarget(); UI.render(); });
     $('mini').addEventListener('click', () => UI.open('win-enemies'));
     $('mini').addEventListener('keydown', (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); e.stopPropagation(); UI.open('win-enemies'); } });
@@ -108,6 +109,15 @@
       const b = el.querySelector('.badge'); b.hidden = fp <= 0; b.textContent = fp;
     }
     const tot = ZP.mastery.totalFree(), sb = $('s-skills').querySelector('.badge'); sb.hidden = tot <= 0; sb.textContent = tot;
+    // окошко текущего зелья
+    const pid = ZP.potions.next(), pb = $('potion-box');
+    pb.classList.toggle('empty', !pid);
+    const pkey = pid || 'dew';
+    if (pb.dataset.k !== pkey) { pb.dataset.k = pkey; $('pb-ico').src = ZP.pix.potionUrl(pkey); }
+    $('pb-n').textContent = pid ? ZP.potions.count(pid) : 0;
+    $('pb-name').textContent = pid ? '+' + ZP.POTIONS[pid].heal : 'нет';
+    pb.title = pid ? `${ZP.POTIONS[pid].name}: ${ZP.potions.count(pid)} шт. Нажмите, чтобы выпить.` : 'Зелий нет — откроется сумка';
+    pb.setAttribute('aria-label', pb.title);
     // коины и новые предметы
     $('hud-coins').textContent = ZP.save.data.coins;
     const nb = ZP.inventory.freshCount(), bb = $('s-bag').querySelector('.badge'); bb.hidden = nb <= 0; bb.textContent = nb;

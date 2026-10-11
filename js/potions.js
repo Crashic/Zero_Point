@@ -28,6 +28,14 @@
     return have.find((id) => ZP.POTIONS[id].heal >= miss) || have[have.length - 1];
   };
 
+  // зелье, которое будет выпито следующим (для окошка над панелью): на текущее недостающее здоровье,
+  // а при полном здоровье — на то, что будет не хватать при пороге автопитья
+  Pn.next = () => {
+    const H = ZP.hero, at = st().drinkAt, have = ZP.POTION_ORDER.filter((id) => Pn.count(id) > 0);
+    if (!have.length) return null;
+    const miss = H.hp < H.max ? H.max - H.hp : H.max * (1 - (at || 30) / 100);
+    return have.find((id) => ZP.POTIONS[id].heal >= miss) || have[have.length - 1];
+  };
   Pn.update = (dt) => {
     Pn.cd -= dt;
     const H = ZP.hero, at = st().drinkAt;
@@ -35,20 +43,19 @@
     if ((H.hp / H.max) * 100 <= at) { const id = Pn.pick(); if (id) Pn.drink(id, true); else Pn.cd = 2; }
   };
 
-  // автозакупка: докупить до заданного количества; если коинов мало — по одному по кругу, на сколько хватит
+  // автозакупка: сначала самые дорогие из выбранных, сколько хватит коинов (не больше заказанного);
+  // на оставшуюся «сдачу» — более дешёвые, тоже не больше заказанного
   Pn.autoBuy = (silent) => {
     const want = st().autobuy, bought = {};
-    let spent = 0, progress = true;
-    while (progress) {
-      progress = false;
-      for (const id of ZP.POTION_ORDER) {
-        const need = (want[id] || 0) - Pn.count(id);
-        const price = ZP.POTIONS[id].price;
-        if (need > 0 && D().coins >= price) {
-          D().coins -= price; spent += price;
-          D().potions[id] = Pn.count(id) + 1; bought[id] = (bought[id] || 0) + 1; progress = true;
-        }
-      }
+    let spent = 0;
+    const order = ZP.POTION_ORDER.slice().sort((a, b) => ZP.POTIONS[b].price - ZP.POTIONS[a].price);
+    for (const id of order) {
+      const need = (want[id] || 0) - Pn.count(id), price = ZP.POTIONS[id].price;
+      if (need <= 0) continue;
+      const n = Math.min(need, Math.floor(D().coins / price));
+      if (n <= 0) continue;
+      D().coins -= n * price; spent += n * price;
+      D().potions[id] = Pn.count(id) + n; bought[id] = n;
     }
     const list = Object.entries(bought).map(([id, n]) => `${ZP.POTIONS[id].name} ×${n}`);
     const short = ZP.POTION_ORDER.some((id) => (want[id] || 0) > Pn.count(id));

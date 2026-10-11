@@ -79,7 +79,18 @@
       if (!t || !t.aggro || U.dist(H, att) < U.dist(H, t) - 40) { AI.setTarget(att); return; }
     }
     if (t) return;
+    const st = ZP.save.data.settings;
     let best = null, bs = 1e9;
+    // «похожие по уровню»: только враги ±1 уровень от выбранного, ближайшие, точный уровень в приоритете
+    if (st.similar) {
+      for (const e of ZP.enemies.list) {
+        if (skipAuto(e) || Math.abs(e.L - st.similarLevel) > 1) continue;
+        const sc = U.dist(H, e) + Math.abs(e.L - st.similarLevel) * 150 - (e.aggro ? 300 : 0);
+        if (sc < bs) { bs = sc; best = e; }
+      }
+      if (best) { AI.setTarget(best, false, `Похожая цель (ур. ${st.similarLevel})`); H.similarMiss = false; return; }
+      if (!H.similarMiss) { H.similarMiss = true; ZP.ui.log(`Врагов ${st.similarLevel}±1 уровня рядом нет — героиня бьёт кого найдёт.`, 'miss'); }
+    }
     for (const e of ZP.enemies.list) {
       if (skipAuto(e)) continue;
       const sc = U.dist(H, e) + (e.L - 1) * 220 - (e.aggro ? 400 : 0);
@@ -93,7 +104,7 @@
     ZP.ui.dirty();
   };
   // игрок указал цель: тапом по врагу или из списка врагов
-  AI.forceTarget = (e) => { if (!e || e.dead || H.dead) return; AI.setTarget(e, true, 'Игрок выбрал цель'); };
+  AI.forceTarget = (e) => { if (!e || e.dead || H.dead) return; ZP.save.data.settings.similarLevel = e.L; AI.setTarget(e, true, 'Игрок выбрал цель'); };
   // кнопка «Сменить цель»: бросить текущую и идти к ближайшей другой
   AI.switchTarget = () => {
     if (H.dead) return;
@@ -105,7 +116,7 @@
       const d = H.map === 'field' ? U.dist(H, e) : Math.hypot(e.x - ZP.world.maps.field.gates.north.x, e.y - ZP.world.maps.field.gates.north.y);
       if (d < bd) { bd = d; best = e; }
     }
-    if (best) AI.setTarget(best, true, 'Смена цели');
+    if (best) { ZP.save.data.settings.similarLevel = best.L; AI.setTarget(best, true, 'Смена цели'); }
     else { H.target = null; H.forced = false; ZP.ui.log('Других врагов рядом нет.', 'miss'); }
   };
 

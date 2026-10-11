@@ -18,7 +18,7 @@
     coins: 0,
     coinsEarned: 0,
     potions: {},
-    settings: { drinkAt: 30, autobuy: {}, autosellOn: false, autosellRar: [true, false, false, false] },
+    settings: { drinkAt: 30, autobuy: {}, autosellOn: false, autosellRar: [true, false, false, false], similar: false, similarLevel: 1 },
     savedAt: 0,
   });
 
@@ -65,6 +65,8 @@
         if (rs.autobuy && typeof rs.autobuy === 'object') for (const [id, n] of Object.entries(rs.autobuy)) if (ZP.POTIONS[id]) d.settings.autobuy[id] = Math.max(0, Math.min(ZP.POTION_MAX_AUTOBUY, n | 0));
         d.settings.autosellOn = !!rs.autosellOn;
         if (Array.isArray(rs.autosellRar) && rs.autosellRar.length === 4) d.settings.autosellRar = rs.autosellRar.map(Boolean);
+        d.settings.similar = !!rs.similar;
+        if (rs.similarLevel >= 1 && rs.similarLevel <= 10) d.settings.similarLevel = rs.similarLevel | 0;
       }
       this.data = d;
       return d;

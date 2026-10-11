@@ -50,6 +50,8 @@
   <div class="banner ol" id="banner" hidden><b id="banner-title"></b><span id="banner-sub"></span></div>
   <div class="fade" id="fade"></div>
 
+  <button class="frame potion-box" id="potion-box" type="button" aria-label="Текущее зелье"><img id="pb-ico" alt=""><span class="pb-n ol" id="pb-n">0</span><span class="pb-name ol" id="pb-name"></span></button>
+
   <div class="hud-bottom">
     <div class="frame actionbar" id="actionbar"></div>
   </div>
@@ -111,7 +113,7 @@
         <div class="inset item-card" id="item-card"></div>
         <div class="inset" style="display:grid;gap:8px">
           <h4>Автозакупка при воскрешении</h4>
-          <p class="hint">После воскрешения у камня героиня докупает зелья до выбранного количества. Если коинов не хватает — покупает по одному каждого вида по кругу, на сколько хватит.</p>
+          <p class="hint">После воскрешения у камня героиня докупает зелья до выбранного количества: сначала самые дорогие, а на оставшуюся сдачу — более дешёвые, но не больше выбранного.</p>
           <div class="abuy" id="autobuy"></div>
           <div class="abuy-foot"><span class="hint" id="autobuy-cost"></span><button class="tbtn" type="button" id="buy-now">Докупить сейчас</button></div>
         </div>
@@ -130,6 +132,8 @@
     <div class="frame window small" role="dialog" aria-labelledby="we-title">
       <div class="win-head"><span class="spacer"></span><h2 class="ol" id="we-title">Враги на карте</h2><button class="ibtn close" type="button" aria-label="Закрыть"></button></div>
       <div class="win-body">
+        <button class="toggle" type="button" id="similar-btn" aria-pressed="false"></button>
+        <p class="hint" id="similar-hint"></p>
         <p class="hint" id="enemy-sum"></p>
         <div class="elist" id="enemy-list"></div>
       </div>
@@ -144,7 +148,7 @@
         <p class="hint" id="death-sub"></p>
         <div class="inset" style="display:grid;gap:8px">
           <h4>Автозакупка зелий</h4>
-          <p class="hint">Сколько зелий каждого вида героиня докупит у камня воскрешения. Если коинов не хватит — купит по одному каждого вида по кругу, на сколько хватит.</p>
+          <p class="hint">Сколько зелий каждого вида героиня докупит у камня воскрешения: сначала самые дорогие, а на оставшуюся сдачу — более дешёвые, но не больше выбранного.</p>
           <div class="abuy" id="death-autobuy"></div>
           <div class="abuy-foot"><span class="hint" id="death-cost"></span></div>
         </div>
