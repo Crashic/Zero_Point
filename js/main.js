@@ -12,6 +12,7 @@
     ZP.uiSkills.init();
     ZP.uiBag.init();
     ZP.uiEnemies.init();
+    ZP.uiDeath.init();
     ZP.uiMenu.init();
     ZP.pwa.init();
     ZP.render.layout();
@@ -72,6 +73,7 @@
     ZP.render.updateCamera(raw);
     ZP.render.draw();
     ZP.ui.renderFast();
+    ZP.uiDeath.tick(now);
     if (now - lastSlow > 150) {
       lastSlow = now;
       ZP.render.drawMinimap($('minimap'));

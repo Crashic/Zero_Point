@@ -43,7 +43,8 @@
   AI.update = (dt) => {
     H.moving = false; H.hurtFlash = Math.max(0, H.hurtFlash - dt);
     if (ZP.world.pending) return;
-    if (H.dead) { H.deathT += dt; if (H.deathT >= ZP.RESPAWN_TIME) ZP.world.respawnHero(); return; }
+    // воскрешением управляет окно воскрешения (ui-death.js) — по кнопке или по таймеру
+    if (H.dead) { H.deathT += dt; return; }
     H.cd -= dt;
     if (H.animDur) { H.anim += dt; if (!H.resolved && H.anim >= H.animDur * 0.55) AI.resolveAttack(); if (H.anim >= H.animDur) H.animDur = 0; }
     const now = ZP.time.clock;
@@ -203,6 +204,7 @@
     H.dead = true; H.deathT = 0; H.hp = 0; H.animDur = 0; H.target = null; H.attacker = null; H.forced = false;
     // после воскрешения не идти снова к тому, кто убил (5 минут или пока он жив)
     H.avoidId = killer.id; H.avoidUntil = ZP.time.clock + 300;
+    if (ZP.uiDeath) ZP.uiDeath.killer = killer;
     AI.clearTimers();
     ZP.save.data.deaths++;
     ZP.ui.log(`${ZP.HERO_NAME} погибает. Её одолел враг: ${killer.name}, ур. ${killer.L}. Воскрешение в деревне…`, 'bad');

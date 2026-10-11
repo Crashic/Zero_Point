@@ -9,6 +9,9 @@
   I.totalItems = () => Object.values(inv()).reduce((a, b) => a + b, 0);
   I.totalValue = () => Object.entries(inv()).reduce((a, [id, n]) => a + (ZP.ITEMS[id] ? ZP.ITEMS[id].price * n : 0), 0);
   I.add = (id, n = 1) => { inv()[id] = I.count(id) + n; I.fresh.add(id); ZP.ui.dirty(); };
+  // «новые» — только те виды, что ещё лежат в сумке
+  I.prune = () => { for (const id of [...I.fresh]) if (!I.count(id)) I.fresh.delete(id); };
+  I.freshCount = () => { I.prune(); return I.fresh.size; };
 
   // бросок добычи при победе: 10–30% в зависимости от уровня; предмет — из категории врага
   I.rollDrop = (e) => {
@@ -64,6 +67,7 @@
     const gain = it.price * n;
     inv()[id] = have - n; if (!inv()[id]) delete inv()[id];
     ZP.save.data.coins += gain; ZP.save.data.coinsEarned = (ZP.save.data.coinsEarned || 0) + gain;
+    I.prune();
     ZP.ui.log(`Продано: ${it.name} ×${n} за ${gain} коин.`, 'gold');
     ZP.save.write(); ZP.ui.dirty();
     return gain;
@@ -73,6 +77,7 @@
     if (!ZP.save.data.settings.autosellOn) return 0;
     let gain = 0, n = 0;
     for (const [id, cnt] of Object.entries(inv())) if (ZP.ITEMS[id] && I.autoSells(id)) { gain += ZP.ITEMS[id].price * cnt; n += cnt; delete inv()[id]; }
+    I.prune();
     if (n) { ZP.save.data.coins += gain; ZP.save.data.coinsEarned = (ZP.save.data.coinsEarned || 0) + gain; ZP.ui.log(`Автопродажа: ${n} предм. за ${gain} коин.`, 'gold'); ZP.save.write(); ZP.ui.dirty(); }
     return gain;
   };
@@ -81,6 +86,7 @@
     for (const [id, cnt] of Object.entries(inv())) { if (!ZP.ITEMS[id]) continue; gain += ZP.ITEMS[id].price * cnt; n += cnt; }
     if (!n) return 0;
     ZP.save.data.inventory = {};
+    I.fresh.clear();
     ZP.save.data.coins += gain; ZP.save.data.coinsEarned = (ZP.save.data.coinsEarned || 0) + gain;
     ZP.ui.log(`Продано всё: ${n} предм. за ${gain} коин.`, 'gold');
     ZP.save.write(); ZP.ui.dirty();

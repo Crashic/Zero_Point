@@ -22,9 +22,23 @@
       <div class="sell-row"><button class="gbtn" type="button" data-act="drink" ${can ? '' : 'disabled'}>Выпить${n ? '' : ' (нет в сумке)'}</button></div>`;
   }
 
+  // строки автозакупки (общие для сумки и окна воскрешения)
+  B.autobuyHTML = () => {
+    const st = D().settings;
+    return ZP.POTION_ORDER.map((id) => {
+      const p = ZP.POTIONS[id], n = st.autobuy[id] || 0;
+      return `<div class="abuy-row"><img src="${ZP.pix.potionUrl(id)}" alt=""><span class="abuy-name"><b>${p.name}</b><small>+${p.heal} ОЗ · ${p.price} коин. · есть ${ZP.potions.count(id)}</small></span>
+        <span class="stepper"><button class="tbtn" type="button" data-ab="${id}" data-d="-1" aria-label="Меньше">−</button><b class="ol">${n}</b><button class="tbtn" type="button" data-ab="${id}" data-d="1" aria-label="Больше">+</button></span></div>`;
+    }).join('');
+  };
+  B.stepAutobuy = (btn) => {
+    const ab = D().settings.autobuy, id = btn.dataset.ab;
+    ab[id] = Math.max(0, Math.min(ZP.POTION_MAX_AUTOBUY, (ab[id] || 0) + +btn.dataset.d));
+    ZP.save.write();
+  };
   B.render = (force) => {
     const d = D(), inv = d.inventory, ids = ZP.ITEM_ORDER.filter((id) => inv[id] > 0), st = d.settings;
-    const sig = JSON.stringify([inv, d.potions, d.coins, B.sel, st, ZP.hero.map, Math.round(ZP.hero.hp / 10), ZP.inventory.fresh.size]);
+    const sig = JSON.stringify([inv, d.potions, d.coins, B.sel, st, ZP.hero.map, Math.round(ZP.hero.hp / 10), ZP.inventory.freshCount()]);
     if (!force && sig === B.sig) return;
     B.sig = sig;
     $('bag-coins').textContent = d.coins;
@@ -51,11 +65,7 @@
     else card.innerHTML = B.sel.startsWith('p:') ? potionCard(B.sel.slice(2)) : itemCard(B.sel.slice(2));
 
     // автозакупка
-    $('autobuy').innerHTML = ZP.POTION_ORDER.map((id) => {
-      const p = ZP.POTIONS[id], n = st.autobuy[id] || 0;
-      return `<div class="abuy-row"><img src="${ZP.pix.potionUrl(id)}" alt=""><span class="abuy-name"><b>${p.name}</b><small>+${p.heal} ОЗ · ${p.price} коин. · есть ${ZP.potions.count(id)}</small></span>
-        <span class="stepper"><button class="tbtn" type="button" data-ab="${id}" data-d="-1" aria-label="Меньше">−</button><b class="ol">${n}</b><button class="tbtn" type="button" data-ab="${id}" data-d="1" aria-label="Больше">+</button></span></div>`;
-    }).join('');
+    $('autobuy').innerHTML = B.autobuyHTML();
     const cost = ZP.potions.setCost();
     $('autobuy-cost').textContent = cost ? `Докупить до набора: ${cost} коин.` : 'Набор собран или не выбран.';
     const bn = $('buy-now'); bn.disabled = !cost || ZP.hero.map !== 'village' || ZP.hero.dead;
@@ -80,9 +90,7 @@
     });
     $('autobuy').addEventListener('click', (e) => {
       const b = e.target.closest('[data-ab]'); if (!b) return;
-      const ab = D().settings.autobuy, id = b.dataset.ab;
-      ab[id] = Math.max(0, Math.min(ZP.POTION_MAX_AUTOBUY, (ab[id] || 0) + +b.dataset.d));
-      ZP.save.write(); B.render(true);
+      B.stepAutobuy(b); B.render(true);
     });
     $('buy-now').addEventListener('click', () => { ZP.potions.autoBuy(); B.render(true); });
     $('autosell-on').addEventListener('click', () => {

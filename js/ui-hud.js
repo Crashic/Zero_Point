@@ -23,6 +23,7 @@
 
   // окна
   const wins = ['win-skills', 'win-char', 'win-menu', 'win-bag', 'win-enemies'];
+  // окно воскрешения управляется отдельно (ui-death.js)
   UI.open = (id) => {
     for (const w of wins) if (w !== id) $(w).hidden = true;
     if (id === 'win-skills') ZP.uiSkills.open();
@@ -33,7 +34,7 @@
     $(id).hidden = false;
     const c = $(id).querySelector('.close'); if (c) c.focus({ preventScroll: true });
   };
-  UI.close = (id) => { $(id).hidden = true; };
+  UI.close = (id) => { if (id === 'win-death') return; $(id).hidden = true; if (id === 'win-bag') { ZP.inventory.fresh.clear(); UI.render(); } };
   UI.toggle = (id) => ($(id).hidden ? UI.open(id) : UI.close(id));
   UI.anyOpen = () => wins.some((w) => !$(w).hidden);
 
@@ -109,12 +110,13 @@
     const tot = ZP.mastery.totalFree(), sb = $('s-skills').querySelector('.badge'); sb.hidden = tot <= 0; sb.textContent = tot;
     // коины и новые предметы
     $('hud-coins').textContent = ZP.save.data.coins;
-    const nb = ZP.inventory.fresh.size, bb = $('s-bag').querySelector('.badge'); bb.hidden = nb <= 0; bb.textContent = nb;
+    const nb = ZP.inventory.freshCount(), bb = $('s-bag').querySelector('.badge'); bb.hidden = nb <= 0; bb.textContent = nb;
     if (!$('win-bag').hidden) ZP.uiBag.render();
     if (!$('win-enemies').hidden) ZP.uiEnemies.render();
     // баннер
     const bn = $('banner');
-    if (H.dead) { bn.hidden = false; bn.className = 'banner ol dead'; $('banner-title').textContent = `${ZP.HERO_NAME} погибла`; $('banner-sub').textContent = `Воскрешение в деревне через ${Math.max(1, Math.ceil(ZP.RESPAWN_TIME - H.deathT))}…`; }
+    if (H.dead && !$('win-death').hidden) bn.hidden = true;
+    else if (H.dead) { bn.hidden = false; bn.className = 'banner ol dead'; $('banner-title').textContent = `${ZP.HERO_NAME} погибла`; $('banner-sub').textContent = 'Воскрешение в деревне…'; }
     else if (ZP.paused) { bn.hidden = false; bn.className = 'banner ol'; $('banner-title').textContent = 'Пауза'; $('banner-sub').textContent = ''; }
     else bn.hidden = true;
     if (!$('win-char').hidden) ZP.uiChar.render();

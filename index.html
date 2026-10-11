@@ -136,6 +136,24 @@
     </div>
   </div>
 
+  <!-- Окно: воскрешение (открывается само при гибели) -->
+  <div class="layer" id="win-death" hidden>
+    <div class="frame window small" role="dialog" aria-labelledby="wd-title">
+      <div class="win-head"><h2 class="ol dead-title" id="wd-title">Аэлис погибла</h2></div>
+      <div class="win-body">
+        <p class="hint" id="death-sub"></p>
+        <div class="inset" style="display:grid;gap:8px">
+          <h4>Автозакупка зелий</h4>
+          <p class="hint">Сколько зелий каждого вида героиня докупит у камня воскрешения. Если коинов не хватит — купит по одному каждого вида по кругу, на сколько хватит.</p>
+          <div class="abuy" id="death-autobuy"></div>
+          <div class="abuy-foot"><span class="hint" id="death-cost"></span></div>
+        </div>
+        <button class="gbtn" type="button" id="revive-btn">Воскреснуть</button>
+        <p class="hint center" id="death-timer"></p>
+      </div>
+    </div>
+  </div>
+
   <!-- Окно: меню -->
   <div class="layer" id="win-menu" hidden>
     <div class="frame window small" role="dialog" aria-labelledby="wm-title">
@@ -200,6 +218,7 @@
 <script src="js/ui-character.js"></script>
 <script src="js/ui-bag.js"></script>
 <script src="js/ui-enemies.js"></script>
+<script src="js/ui-death.js"></script>
 <script src="js/ui-menu.js"></script>
 <script src="js/pwa.js"></script>
 <script src="js/main.js"></script>
